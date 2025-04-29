@@ -56,6 +56,6 @@ public:
     void printList() const;
 };
 
-#endif // LIST_H
-
 #include "List.tpp"
+
+#endif // LIST_H
