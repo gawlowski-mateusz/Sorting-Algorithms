@@ -2,6 +2,83 @@
 #include <fstream>
 #include "./List/List.h"
 
+#include "./SortingAlgorithms/QuickSort/QuickSort.h"
+#include "./SortingAlgorithms/InsertionSort/InsertionSort.h"
+#include "./SortingAlgorithms/ShellSort/ShellSort.h"
+#include "./SortingAlgorithms/HeapSort/HeapSort.h"
+
+template<typename T>
+void printArray(const T* array, int size) {
+    for (int i = 0; i < size; ++i)
+        std::cout << array[i] << " ";
+    std::cout << std::endl;
+}
+
+void testSortingAlgorithms() {
+    std::cout << "\n===== TESTING SORTING ALGORITHMS =====\n" << std::endl;
+
+    List<int> intList1;
+    List<int> intList2;
+    List<int> intList3;
+    List<int> intList4;
+
+
+    // Test generateList
+    std::cout << "\nTesting generateList:" << std::endl;
+    intList1.generateList(10);
+    intList2.generateList(10);
+    intList3.generateList(10);
+    intList4.generateList(10);
+
+
+    // QuickSort
+    std::cout << "\n\n\nOriginal array:\n";
+    intList1.printList();
+
+    QuickSort<int> quickSort;
+    std::cout << "\nQuickSort (pivot = 'x'):\n";
+    quickSort.sort(intList1, 'x');
+
+    std::cout << "\nSorted array:\n";
+    intList1.printList();
+
+
+    // InsertionSort
+    std::cout << "\n\n\nOriginal array:\n";
+    intList2.printList();
+
+    InsertionSort<int> insertionSort;
+    std::cout << "\nInsertionSort:\n";
+    insertionSort.sort(intList2);
+
+    std::cout << "\nSorted array:\n";
+    intList2.printList();
+
+
+    // ShellSort
+    std::cout << "\n\n\nOriginal array:\n";
+    intList3.printList();
+
+    ShellSort<int> shellSort;
+    std::cout << "\nShellSort (Tokuda sequence):\n";
+    shellSort.sort(intList3, 2); // 1 for Papiernow, 2 for Tokuda
+
+    std::cout << "\nSorted array:\n";
+    intList3.printList();
+
+
+    // HeapSort
+    std::cout << "\n\n\nOriginal array:\n";
+    intList4.printList();
+
+    HeapSort<int> heapSort;
+    std::cout << "\nHeapSort:\n";
+    heapSort.sort(intList4);
+
+    std::cout << "\nSorted array:\n";
+    intList4.printList();    
+}
+
 // Helper function to write test data to a file
 template <typename T>
 void writeTestFile(const std::string& filename, const std::vector<T>& data) {
@@ -272,7 +349,10 @@ int main() {
     
     // Test all methods for char list
     testCharList();
-    
+
+    // Test all sorting algorithms
+    testSortingAlgorithms();
+
     std::cout << "\nAll tests completed!" << std::endl;
     
     return 0;
