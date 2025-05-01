@@ -283,3 +283,40 @@ void List<T>::generateListAscending(int size) {
         }
     }
 }
+
+// Save list data to a file
+template <typename T>
+void List<T>::saveToFile(const std::string& filename) const {
+    FILE* file = fopen(filename.c_str(), "w");
+    if (file == nullptr) {
+        std::cerr << "Could not open file for writing: " << filename << std::endl;
+        return;
+    }
+
+    fprintf(file, "%d\n", size);  // Write the number of elements
+
+    Node<T>* current = head;
+    while (current) {
+        if (std::is_same<T, int>::value) {
+            fprintf(file, "%d\n", static_cast<int>(current->value));
+        }
+        else if (std::is_same<T, float>::value) {
+            fprintf(file, "%f\n", static_cast<float>(current->value));
+        }
+        else if (std::is_same<T, double>::value) {
+            fprintf(file, "%lf\n", static_cast<double>(current->value));
+        }
+        else if (std::is_same<T, char>::value) {
+            fprintf(file, "%c\n", static_cast<char>(current->value));
+        }
+        else {
+            std::cerr << "Unsupported type for saving.\n";
+            fclose(file);
+            return;
+        }
+
+        current = current->next;
+    }
+
+    fclose(file);
+}

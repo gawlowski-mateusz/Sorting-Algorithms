@@ -1,415 +1,151 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 #include "./List/List.h"
-#include "./Vector/Vector.h"
 
 #include "./SortingAlgorithms/QuickSort/QuickSort.h"
 #include "./SortingAlgorithms/InsertionSort/InsertionSort.h"
 #include "./SortingAlgorithms/ShellSort/ShellSort.h"
 #include "./SortingAlgorithms/HeapSort/HeapSort.h"
 
+std::string toLower(const std::string& str) {
+    std::string result;
+    for (char c : str) result += std::tolower(c);
+    return result;
+}
+
 template<typename T>
-void printArray(const T* array, int size) {
-    for (int i = 0; i < size; ++i)
-        std::cout << array[i] << " ";
-    std::cout << std::endl;
+void sortAndSave(List<T>& list, const std::string& algorithm, const std::string& outputFile) {
+    if (algorithm == "quick") {
+        QuickSort<T> sorter;
+        sorter.sort(list, 'x');
+    } else if (algorithm == "insertion") {
+        InsertionSort<T> sorter;
+        sorter.sort(list);
+    } else if (algorithm == "shell") {
+        ShellSort<T> sorter;
+        sorter.sort(list, 2);
+    } else if (algorithm == "heap") {
+        HeapSort<T> sorter;
+        sorter.sort(list);
+    } else {
+        std::cerr << "Unknown sorting algorithm.\n";
+        return;
+    }
+
+    std::cout << "\nSorted list:\n";
+    list.printList();
+
+    if (!outputFile.empty()) {
+        list.saveToFile(outputFile);
+        std::cout << "Saved sorted data to: " << outputFile << '\n';
+    }
 }
 
-void testSortingAlgorithms() {
-    std::cout << "\n===== TESTING SORTING ALGORITHMS =====\n" << std::endl;
+template<typename T>
+void handleFileMode(const std::string& algorithm, const std::string& inputFile, const std::string& outputFile) {
+    List<T> list;
+    if (list.loadFromFile(inputFile) != 0) {
+        std::cerr << "Failed to load data from file.\n";
+        return;
+    }
 
-    List<int> intList1;
-    List<int> intList2;
-    List<int> intList3;
-    List<int> intList4;
+    std::cout << "\nLoaded list:\n";
+    list.printList();
 
-
-    // Test generateList
-    std::cout << "\nTesting generateList:" << std::endl;
-    intList1.generateList(10);
-    intList2.generateList(10);
-    intList3.generateList(10);
-    intList4.generateList(10);
-
-
-    // QuickSort
-    std::cout << "\n\n\nOriginal array:\n";
-    intList1.printList();
-
-    QuickSort<int> quickSort;
-    std::cout << "\nQuickSort (pivot = 'x'):\n";
-    quickSort.sort(intList1, 'x');
-
-    std::cout << "\nSorted array:\n";
-    intList1.printList();
-
-
-    // InsertionSort
-    std::cout << "\n\n\nOriginal array:\n";
-    intList2.printList();
-
-    InsertionSort<int> insertionSort;
-    std::cout << "\nInsertionSort:\n";
-    insertionSort.sort(intList2);
-
-    std::cout << "\nSorted array:\n";
-    intList2.printList();
-
-
-    // ShellSort
-    std::cout << "\n\n\nOriginal array:\n";
-    intList3.printList();
-
-    ShellSort<int> shellSort;
-    std::cout << "\nShellSort (Tokuda sequence):\n";
-    shellSort.sort(intList3, 2); // 1 for Papiernow, 2 for Tokuda
-
-    std::cout << "\nSorted array:\n";
-    intList3.printList();
-
-
-    // HeapSort
-    std::cout << "\n\n\nOriginal array:\n";
-    intList4.printList();
-
-    HeapSort<int> heapSort;
-    std::cout << "\nHeapSort:\n";
-    heapSort.sort(intList4);
-
-    std::cout << "\nSorted array:\n";
-    intList4.printList();    
+    sortAndSave(list, algorithm, outputFile);
 }
 
-// Helper function to write test data to a file
-template <typename T>
-void writeTestFile(const std::string& filename, const std::vector<T>& data) {
-    std::ofstream file(filename);
-    if (file.is_open()) {
-        file << data.size() << std::endl;
-        for (const auto& item : data) {
-            file << item << std::endl;
+template<typename T>
+void handleTestMode(const std::string& algorithm, int size, const std::string& sortType, const std::string& outputFile) {
+    List<T> list;
+
+    if (sortType == "random") list.generateList(size);
+    else if (sortType == "ascending") list.generateListAscending(size);
+    else if (sortType == "descending") list.generateListDescending(size);
+    else {
+        std::cerr << "Unknown sort type: use random, ascending or descending.\n";
+        return;
+    }
+
+    std::cout << "\nGenerated list (" << sortType << "):\n";
+    list.printList();
+
+    sortAndSave(list, algorithm, outputFile);
+}
+
+void printHelp() {
+    std::cout << "\nUsage:\n"
+              << "./main --file <algorithm> <type> <inputFile> [outputFile]\n"
+              << "./main --test <algorithm> <type> <size> <sort> <outputFile>\n"
+              << "./main --help\n\n"
+              << "Arguments:\n"
+              << "  <algorithm>   quick | insertion | shell | heap\n"
+              << "  <type>        int | float | double | char\n"
+              << "  <sort>        random | ascending | descending\n\n"
+              << "Examples:\n"
+              << "  ./main --file quick int ./input.txt ./sorted.txt\n"
+              << "  ./main --test heap double 100 random ./output.txt\n";
+}
+
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cerr << "Missing arguments. Use --help for usage.\n";
+        return 1;
+    }
+
+    std::string run_type = toLower(argv[1]);
+
+    if (run_type == "--help") {
+        printHelp();
+        return 0;
+    }
+
+    if (run_type == "--file") {
+        if (argc < 5) {
+            std::cerr << "Usage: ./main --file <algorithm> <type> <inputFile> [outputFile]\n";
+            return 1;
         }
-        file.close();
-        std::cout << "Test file " << filename << " created successfully." << std::endl;
+
+        std::string algorithm = toLower(argv[2]);
+        std::string type = toLower(argv[3]);
+        std::string inputFile = argv[4];
+        std::string outputFile = (argc >= 6) ? argv[5] : "";
+
+        if (type == "int") handleFileMode<int>(algorithm, inputFile, outputFile);
+        else if (type == "float") handleFileMode<float>(algorithm, inputFile, outputFile);
+        else if (type == "double") handleFileMode<double>(algorithm, inputFile, outputFile);
+        else if (type == "char") handleFileMode<char>(algorithm, inputFile, outputFile);
+        else {
+            std::cerr << "Unsupported data type.\n";
+            return 1;
+        }
+
+    } else if (run_type == "--test") {
+        if (argc < 7) {
+            std::cerr << "Usage: ./main --test <algorithm> <type> <size> <sort> <outputFile>\n";
+            return 1;
+        }
+
+        std::string algorithm = toLower(argv[2]);
+        std::string type = toLower(argv[3]);
+        int size = std::stoi(argv[4]);
+        std::string sortType = toLower(argv[5]);
+        std::string outputFile = argv[6];
+
+        if (type == "int") handleTestMode<int>(algorithm, size, sortType, outputFile);
+        else if (type == "float") handleTestMode<float>(algorithm, size, sortType, outputFile);
+        else if (type == "double") handleTestMode<double>(algorithm, size, sortType, outputFile);
+        else if (type == "char") handleTestMode<char>(algorithm, size, sortType, outputFile);
+        else {
+            std::cerr << "Unsupported data type.\n";
+            return 1;
+        }
+
     } else {
-        std::cout << "Failed to create test file " << filename << std::endl;
+        std::cerr << "Unknown run type. Use --help for usage.\n";
+        return 1;
     }
-}
 
-// Helper function to create test files
-void createTestFiles() {
-    // Integer test file
-    std::vector<int> intData = {5, 10, 15, 20, 25};
-    writeTestFile("./Data/int_test.txt", intData);
-    
-    // Float test file
-    std::vector<float> floatData = {5.5f, 10.1f, 15.7f, 20.3f, 25.9f};
-    writeTestFile("./Data/float_test.txt", floatData);
-    
-    // Character test file
-    std::vector<char> charData = {'a', 'b', 'c', 'd', 'e'};
-    writeTestFile("./Data/char_test.txt", charData);
-}
-
-// Function to test all methods of a List<int>
-void testIntList() {
-    std::cout << "\n===== TESTING INTEGER LIST =====\n" << std::endl;
-    
-    List<int> intList;
-    
-    // Test insertAtHead and insertAtTail
-    std::cout << "Testing insertAtHead and insertAtTail:" << std::endl;
-    intList.insertAtHead(10);
-    intList.insertAtHead(5);
-    intList.insertAtTail(15);
-    intList.insertAtTail(20);
-    std::cout << "List after insertions: ";
-    intList.printList();
-    std::cout << "List size: " << intList.getSize() << std::endl;
-    
-    // Test search
-    std::cout << "\nTesting search:" << std::endl;
-    std::cout << "Is 10 in the list? " << (intList.search(10) ? "Yes" : "No") << std::endl;
-    std::cout << "Is 30 in the list? " << (intList.search(30) ? "Yes" : "No") << std::endl;
-    
-    // Test deleteNode
-    std::cout << "\nTesting deleteNode:" << std::endl;
-    std::cout << "Deleting 10 from the list..." << std::endl;
-    intList.deleteNode(10);
-    std::cout << "List after deletion: ";
-    intList.printList();
-    std::cout << "List size: " << intList.getSize() << std::endl;
-    
-    // Test sortList
-    std::cout << "\nTesting sortList:" << std::endl;
-    intList.sortList();
-    std::cout << "List after sorting: ";
-    intList.printList();
-    
-    // Test getList (copy)
-    std::cout << "\nTesting getList (copy):" << std::endl;
-    Node<int>* copy = intList.getList();
-    std::cout << "Copy of the list: ";
-    // Print the copy manually
-    Node<int>* current = copy;
-    while (current) {
-        std::cout << current->value << " ";
-        Node<int>* temp = current;
-        current = current->next;
-        delete temp; // Clean up the copied nodes
-    }
-    std::cout << std::endl;
-    
-    // Test generateList
-    std::cout << "\nTesting generateList:" << std::endl;
-    intList.generateList(8);
-    std::cout << "Randomly generated list: ";
-    intList.printList();
-    
-    // Test generateListAscending
-    std::cout << "\nTesting generateListAscending:" << std::endl;
-    intList.generateListAscending(5);
-    std::cout << "Ascending list: ";
-    intList.printList();
-    
-    // Test generateListDescending
-    std::cout << "\nTesting generateListDescending:" << std::endl;
-    intList.generateListDescending(5);
-    std::cout << "Descending list: ";
-    intList.printList();
-    
-    // Test loadFromFile
-    std::cout << "\nTesting loadFromFile:" << std::endl;
-    int result = intList.loadFromFile("./Data/int_test.txt");
-    if (result == 0) {
-        std::cout << "List loaded from file: ";
-        intList.printList();
-    } else {
-        std::cout << "Failed to load list from file." << std::endl;
-    }
-    
-    // Test clear
-    std::cout << "\nTesting clear:" << std::endl;
-    intList.clear();
-    std::cout << "List after clearing: ";
-    intList.printList();
-    std::cout << "List size: " << intList.getSize() << std::endl;
-}
-
-// Function to test all methods of a List<float>
-void testFloatList() {
-    std::cout << "\n===== TESTING FLOAT LIST =====\n" << std::endl;
-    
-    List<float> floatList;
-    
-    // Test insertAtHead and insertAtTail
-    std::cout << "Testing insertAtHead and insertAtTail:" << std::endl;
-    floatList.insertAtHead(10.5f);
-    floatList.insertAtHead(5.2f);
-    floatList.insertAtTail(15.7f);
-    floatList.insertAtTail(20.1f);
-    std::cout << "List after insertions: ";
-    floatList.printList();
-    std::cout << "List size: " << floatList.getSize() << std::endl;
-    
-    // Test search
-    std::cout << "\nTesting search:" << std::endl;
-    std::cout << "Is 10.5 in the list? " << (floatList.search(10.5f) ? "Yes" : "No") << std::endl;
-    std::cout << "Is 30.0 in the list? " << (floatList.search(30.0f) ? "Yes" : "No") << std::endl;
-    
-    // Test deleteNode
-    std::cout << "\nTesting deleteNode:" << std::endl;
-    std::cout << "Deleting 10.5 from the list..." << std::endl;
-    floatList.deleteNode(10.5f);
-    std::cout << "List after deletion: ";
-    floatList.printList();
-    std::cout << "List size: " << floatList.getSize() << std::endl;
-    
-    // Test sortList
-    std::cout << "\nTesting sortList:" << std::endl;
-    floatList.sortList();
-    std::cout << "List after sorting: ";
-    floatList.printList();
-    
-    // Test generateList
-    std::cout << "\nTesting generateList:" << std::endl;
-    floatList.generateList(8);
-    std::cout << "Randomly generated list: ";
-    floatList.printList();
-    
-    // Test generateListAscending
-    std::cout << "\nTesting generateListAscending:" << std::endl;
-    floatList.generateListAscending(5);
-    std::cout << "Ascending list: ";
-    floatList.printList();
-    
-    // Test generateListDescending
-    std::cout << "\nTesting generateListDescending:" << std::endl;
-    floatList.generateListDescending(5);
-    std::cout << "Descending list: ";
-    floatList.printList();
-    
-    // Test loadFromFile
-    std::cout << "\nTesting loadFromFile:" << std::endl;
-    int result = floatList.loadFromFile("./Data/float_test.txt");
-    if (result == 0) {
-        std::cout << "List loaded from file: ";
-        floatList.printList();
-    } else {
-        std::cout << "Failed to load list from file." << std::endl;
-    }
-    
-    // Test clear
-    std::cout << "\nTesting clear:" << std::endl;
-    floatList.clear();
-    std::cout << "List after clearing: ";
-    floatList.printList();
-    std::cout << "List size: " << floatList.getSize() << std::endl;
-}
-
-// Function to test all methods of a List<char>
-void testCharList() {
-    std::cout << "\n===== TESTING CHAR LIST =====\n" << std::endl;
-    
-    List<char> charList;
-    
-    // Test insertAtHead and insertAtTail
-    std::cout << "Testing insertAtHead and insertAtTail:" << std::endl;
-    charList.insertAtHead('b');
-    charList.insertAtHead('a');
-    charList.insertAtTail('c');
-    charList.insertAtTail('d');
-    std::cout << "List after insertions: ";
-    charList.printList();
-    std::cout << "List size: " << charList.getSize() << std::endl;
-    
-    // Test search
-    std::cout << "\nTesting search:" << std::endl;
-    std::cout << "Is 'b' in the list? " << (charList.search('b') ? "Yes" : "No") << std::endl;
-    std::cout << "Is 'z' in the list? " << (charList.search('z') ? "Yes" : "No") << std::endl;
-    
-    // Test deleteNode
-    std::cout << "\nTesting deleteNode:" << std::endl;
-    std::cout << "Deleting 'b' from the list..." << std::endl;
-    charList.deleteNode('b');
-    std::cout << "List after deletion: ";
-    charList.printList();
-    std::cout << "List size: " << charList.getSize() << std::endl;
-    
-    // Test sortList
-    std::cout << "\nTesting sortList:" << std::endl;
-    charList.sortList();
-    std::cout << "List after sorting: ";
-    charList.printList();
-    
-    // Test generateList
-    std::cout << "\nTesting generateList:" << std::endl;
-    charList.generateList(8);
-    std::cout << "Randomly generated list: ";
-    charList.printList();
-    
-    // Test generateListAscending
-    std::cout << "\nTesting generateListAscending:" << std::endl;
-    charList.generateListAscending(5);
-    std::cout << "Ascending list: ";
-    charList.printList();
-    
-    // Test generateListDescending
-    std::cout << "\nTesting generateListDescending:" << std::endl;
-    charList.generateListDescending(5);
-    std::cout << "Descending list: ";
-    charList.printList();
-    
-    // Test loadFromFile
-    std::cout << "\nTesting loadFromFile:" << std::endl;
-    int result = charList.loadFromFile("./Data/char_test.txt");
-    if (result == 0) {
-        std::cout << "List loaded from file: ";
-        charList.printList();
-    } else {
-        std::cout << "Failed to load list from file." << std::endl;
-    }
-    
-    // Test clear
-    std::cout << "\nTesting clear:" << std::endl;
-    charList.clear();
-    std::cout << "List after clearing: ";
-    charList.printList();
-    std::cout << "List size: " << charList.getSize() << std::endl;
-}
-
-void testVector() {
-    // Create a vector of integers
-    Vector<int> intVector;
-    
-    // Test push_back
-    std::cout << "Adding elements with pushBack():\n";
-    intVector.pushBack(10);
-    intVector.pushBack(20);
-    intVector.pushBack(30);
-    intVector.pushBack(40);
-    intVector.pushBack(50);
-    intVector.print();
-    
-    // Test random generation
-    std::cout << "\nGenerating random vector:\n";
-    Vector<int> randomVector;
-    randomVector.generateRandom(10);
-    randomVector.print();
-    
-    // Test ascending generation
-    std::cout << "\nGenerating ascending vector:\n";
-    Vector<int> ascendingVector;
-    ascendingVector.generateAscending(10);
-    ascendingVector.print();
-    
-    // Test descending generation
-    std::cout << "\nGenerating descending vector:\n";
-    Vector<int> descendingVector;
-    descendingVector.generateDescending(10);
-    descendingVector.print();  
-    
-    // Test capacity functions
-    std::cout << "\nCapacity functions:\n";
-    std::cout << "Size: " << intVector.getSize() << std::endl;
-    std::cout << "Capacity: " << intVector.getCapacity() << std::endl;
-    
-    // Test reserve and shrink_to_fit
-    std::cout << "\nReserving space for 20 elements:\n";
-    intVector.reserve(20);
-    std::cout << "New capacity: " << intVector.getCapacity() << std::endl;
-    
-    // Test clear
-    std::cout << "\nClearing vector:\n";
-    intVector.clear();
-    std::cout << "Size after clear: " << intVector.getSize() << std::endl;
-    
-    // Test char vector
-    std::cout << "\nTest with character type:\n";
-    Vector<char> charVector;
-    charVector.generateAscending(10);
-    charVector.print();
-}
-
-int main() {
-    // Create test files for file loading tests
-    createTestFiles();
-    
-    // Test all methods for integer list
-    // testIntList();
-    
-    // Test all methods for float list
-    // testFloatList();
-    
-    // Test all methods for char list
-    // testCharList();
-
-    // Test all sorting algorithms
-    testSortingAlgorithms();
-
-    testVector();
-
-    std::cout << "\nAll tests completed!" << std::endl;
-    
     return 0;
 }

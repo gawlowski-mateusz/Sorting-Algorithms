@@ -54,6 +54,7 @@ public:
     // Utility
     int getSize() const;
     void printList() const;
+    void saveToFile(const std::string& filename) const;
 };
 
 #include "List.tpp"
