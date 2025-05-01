@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "./List/List.h"
+#include "./Vector/Vector.h"
 
 #include "./SortingAlgorithms/QuickSort/QuickSort.h"
 #include "./SortingAlgorithms/InsertionSort/InsertionSort.h"
@@ -337,6 +338,89 @@ void testCharList() {
     std::cout << "List size: " << charList.getSize() << std::endl;
 }
 
+void testVector() {
+    // Create a vector of integers
+    Vector<int> intVector;
+    
+    // Test push_back
+    std::cout << "Adding elements with pushBack():\n";
+    intVector.pushBack(10);
+    intVector.pushBack(20);
+    intVector.pushBack(30);
+    intVector.pushBack(40);
+    intVector.pushBack(50);
+    intVector.print();
+    
+    // Test random generation
+    std::cout << "\nGenerating random vector:\n";
+    Vector<int> randomVector;
+    randomVector.generateRandom(10);
+    randomVector.print();
+    
+    // Test ascending generation
+    std::cout << "\nGenerating ascending vector:\n";
+    Vector<int> ascendingVector;
+    ascendingVector.generateAscending(10);
+    ascendingVector.print();
+    
+    // Test descending generation
+    std::cout << "\nGenerating descending vector:\n";
+    Vector<int> descendingVector;
+    descendingVector.generateDescending(10);
+    descendingVector.print();
+    
+    // Test sorting
+    std::cout << "\nSorting random vector:\n";
+    randomVector.sort();
+    randomVector.print();
+    
+    // Test element access
+    std::cout << "\nTesting element access:\n";
+    std::cout << "intVector[2] = " << intVector[2] << std::endl;
+    std::cout << "intVector.at(3) = " << intVector.at(3) << std::endl;
+    std::cout << "intVector.front() = " << intVector.front() << std::endl;
+    std::cout << "intVector.back() = " << intVector.back() << std::endl;
+    
+    // Test insert and erase
+    std::cout << "\nInserting 25 at position 2:\n";
+    intVector.insert(2, 25);
+    intVector.print();
+    
+    std::cout << "Erasing element at position 1:\n";
+    intVector.erase(1);
+    intVector.print();
+    
+    // Test capacity functions
+    std::cout << "\nCapacity functions:\n";
+    std::cout << "Size: " << intVector.getSize() << std::endl;
+    std::cout << "Capacity: " << intVector.getCapacity() << std::endl;
+    
+    // Test reserve and shrink_to_fit
+    std::cout << "\nReserving space for 20 elements:\n";
+    intVector.reserve(20);
+    std::cout << "New capacity: " << intVector.getCapacity() << std::endl;
+    
+    std::cout << "Shrinking to fit:\n";
+    intVector.shrink_to_fit();
+    std::cout << "New capacity: " << intVector.getCapacity() << std::endl;
+    
+    // Test search
+    std::cout << "\nSearching for values:\n";
+    std::cout << "Contains 25? " << (intVector.search(25) ? "Yes" : "No") << std::endl;
+    std::cout << "Contains 15? " << (intVector.search(15) ? "Yes" : "No") << std::endl;
+    
+    // Test clear
+    std::cout << "\nClearing vector:\n";
+    intVector.clear();
+    std::cout << "Size after clear: " << intVector.getSize() << std::endl;
+    
+    // Test char vector
+    std::cout << "\nTest with character type:\n";
+    Vector<char> charVector;
+    charVector.generateAscending(10);
+    charVector.print();
+}
+
 int main() {
     // Create test files for file loading tests
     createTestFiles();
@@ -352,6 +436,8 @@ int main() {
 
     // Test all sorting algorithms
     testSortingAlgorithms();
+
+    testVector();
 
     std::cout << "\nAll tests completed!" << std::endl;
     
