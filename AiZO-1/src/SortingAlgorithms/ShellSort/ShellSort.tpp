@@ -1,12 +1,3 @@
-#include <vector>
-#include <cmath>
-
-template<typename T>
-ShellSort<T>::ShellSort() = default;
-
-template<typename T>
-ShellSort<T>::~ShellSort() = default;
-
 template<typename T>
 int ShellSort<T>::calculateK0(int size, int space_selector) const {
     int k = 0;
@@ -35,8 +26,8 @@ int ShellSort<T>::calculateGap(int k, int space_selector) const {
 }
 
 template<typename T>
-void ShellSort<T>::shellSort(std::vector<T>& data, int space_selector) {
-    int N = static_cast<int>(data.size());
+void ShellSort<T>::shellSort(Vector<T>& data, int space_selector) {
+    int N = data.getSize();
     int k = calculateK0(N, space_selector);
     int gap = calculateGap(k--, space_selector);
 
@@ -56,21 +47,22 @@ void ShellSort<T>::shellSort(std::vector<T>& data, int space_selector) {
 
 template<typename T>
 void ShellSort<T>::sort(List<T>& list, int space_selector) {
-    if (list.getSize() <= 1) return;
+    if (list.getSize() <= 1)
+        return;
 
-    std::vector<T> values;
-    Node<T>* current = list.getList();  // Returns copy
-
+    Vector<T> values;
+    Node<T>* current = list.getList();
+    
     while (current) {
-        values.push_back(current->value);
+        values.pushBack(current->value);
         current = current->next;
     }
 
     shellSort(values, space_selector);
 
-    current = list.getList();  // Refresh pointer
-    for (const T& value : values) {
-        current->value = value;
-        current = current->next;
+    list.clear(); // Clear the original list
+    
+    for (int i = 0; i < values.getSize(); i++) {
+        list.insertAtTail(values[i]);
     }
 }

@@ -1,15 +1,5 @@
-#include "../../RandomGenerator/RandomGenerator.h"
-#include <iostream>
-#include <vector>
-
 template <typename T>
-QuickSort<T>::QuickSort() = default;
-
-template <typename T>
-QuickSort<T>::~QuickSort() = default;
-
-template <typename T>
-int QuickSort<T>::partition(std::vector<T>& array, int left, int right, char pivot_position) {
+int QuickSort<T>::partition(Vector<T>& array, int left, int right, char pivot_position) {
     T pivot;
     RandomGenerator rng;
 
@@ -27,8 +17,9 @@ int QuickSort<T>::partition(std::vector<T>& array, int left, int right, char piv
             pivot = array[rng.getInt() % (right - left + 1) + left];
             break;
         default:
-            std::cout << "ERROR: invalid pivot position" << std::endl;
-            exit(-1);
+            // Handle invalid pivot position
+            pivot = array[(left + right) / 2]; // Default to middle
+            break;
     }
 
     int l = left;
@@ -39,7 +30,10 @@ int QuickSort<T>::partition(std::vector<T>& array, int left, int right, char piv
         while (array[r] > pivot) --r;
 
         if (l < r) {
-            std::swap(array[l], array[r]);
+            // Swap array[l] and array[r]
+            T temp = array[l];
+            array[l] = array[r];
+            array[r] = temp;
             ++l;
             --r;
         } else {
@@ -50,7 +44,7 @@ int QuickSort<T>::partition(std::vector<T>& array, int left, int right, char piv
 }
 
 template <typename T>
-void QuickSort<T>::quickSort(std::vector<T>& array, int left, int right, char pivot_position) {
+void QuickSort<T>::quickSort(Vector<T>& array, int left, int right, char pivot_position) {
     if (left >= right) return;
 
     int m = partition(array, left, right, pivot_position);
@@ -61,21 +55,22 @@ void QuickSort<T>::quickSort(std::vector<T>& array, int left, int right, char pi
 
 template <typename T>
 void QuickSort<T>::sort(List<T>& list, char pivot_position) {
-    if (list.getSize() <= 1) return;
+    if (list.getSize() <= 1)
+        return;
 
-    std::vector<T> values;
-    Node<T>* current = list.getList();  // Returns a *copy*
-
+    Vector<T> values;
+    Node<T>* current = list.getList();
+    
     while (current) {
-        values.push_back(current->value);
+        values.pushBack(current->value);
         current = current->next;
     }
 
-    quickSort(values, 0, static_cast<int>(values.size()) - 1, pivot_position);
+    quickSort(values, 0, values.getSize() - 1, pivot_position);
 
-    current = list.getList();
-    for (const T& value : values) {
-        current->value = value;
-        current = current->next;
+    list.clear(); // Clear the original list
+    
+    for (int i = 0; i < values.getSize(); i++) {
+        list.insertAtTail(values[i]);
     }
 }

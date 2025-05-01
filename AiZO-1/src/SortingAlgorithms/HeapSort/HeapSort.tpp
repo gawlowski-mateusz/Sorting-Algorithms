@@ -1,84 +1,59 @@
 template <typename T>
-HeapSort<T>::HeapSort() = default;
-
-template <typename T>
-HeapSort<T>::~HeapSort() = default;
-
-template <typename T>
-int HeapSort<T>::left(int index) {
-    return 2 * index + 1;
-}
-
-template <typename T>
-int HeapSort<T>::right(int index) {
-    return 2 * index + 2;
-}
-
-template <typename T>
-int HeapSort<T>::parent(int index) {
-    return (index - 1) / 2;
-}
-
-template <typename T>
-void HeapSort<T>::siftDown(std::vector<T>& vec, int N, int i) {
+void HeapSort<T>::heapify(Vector<T>& arr, int n, int i) {
     int largest = i;
-    int l = left(i);
-    int r = right(i);
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
 
-    if (l < N && vec[l] > vec[largest])
-        largest = l;
-    if (r < N && vec[r] > vec[largest])
-        largest = r;
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
 
     if (largest != i) {
-        std::swap(vec[i], vec[largest]);
-        siftDown(vec, N, largest);
-    }
-}
-
-template <typename T>
-void HeapSort<T>::buildHeap(std::vector<T>& vec) {
-    int startIdx = (vec.size() / 2) - 1;
-    for (int i = startIdx; i >= 0; i--) {
-        siftDown(vec, vec.size(), i);
+        // Swap arr[i] and arr[largest]
+        T temp = arr[i];
+        arr[i] = arr[largest];
+        arr[largest] = temp;
+        
+        // Recursively heapify the affected sub-tree
+        heapify(arr, n, largest);
     }
 }
 
 template <typename T>
 void HeapSort<T>::sort(List<T>& list) {
-    if (list.getSize() <= 1) return;
+    if (list.getSize() <= 1)
+        return;
 
-    // Extract values to vector
-    std::vector<T> values;
-    Node<T>* node = list.getList();  // Get a copy
-    while (node) {
-        values.push_back(node->value);
-        Node<T>* temp = node;
-        node = node->next;
-        delete temp;  // Clean up copy
-    }
-
-    // Apply heap sort
-    buildHeap(values);
-    for (int i = values.size() - 1; i > 0; --i) {
-        std::swap(values[0], values[i]);
-        siftDown(values, i, 0);
-    }
-
-    // Put sorted values back into original list
-    Node<T>* current = list.getList();  // original list head
-    int index = 0;
-    current = list.getList();  // re-get copy to avoid double-delete
-    Node<T>* orig = list.getList();     // walk original list
-    while (orig && index < values.size()) {
-        orig->value = values[index++];
-        orig = orig->next;
-    }
-
-    // Clean up the unused copy again
+    Vector<T> values;    
+    Node<T>* current = list.getList();
+    
     while (current) {
-        Node<T>* temp = current;
+        values.pushBack(current->value);
         current = current->next;
-        delete temp;
+    }
+
+    int n = values.getSize();
+
+    // Build heap (rearrange array)
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(values, n, i);
+
+    // Extract elements from heap one by one
+    for (int i = n - 1; i > 0; i--) {
+        // Move current root to end
+        T temp = values[0];
+        values[0] = values[i];
+        values[i] = temp;
+        
+        // Call max heapify on the reduced heap
+        heapify(values, i, 0);
+    }
+
+    list.clear(); // Clear the original list
+    
+    for (int i = 0; i < values.getSize(); i++) {
+        list.insertAtTail(values[i]);
     }
 }
