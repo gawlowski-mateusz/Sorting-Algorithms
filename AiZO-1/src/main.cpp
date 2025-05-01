@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include "./List/List.h"
+#include "./Timer/Timer.h"
 
 #include "./SortingAlgorithms/QuickSort/QuickSort.h"
 #include "./SortingAlgorithms/InsertionSort/InsertionSort.h"
@@ -16,6 +17,13 @@ std::string toLower(const std::string& str) {
 
 template<typename T>
 void sortAndSave(List<T>& list, const std::string& algorithm, const std::string& outputFile) {
+    // Create timer object
+    Timer timer;
+    int executionTime = 0;
+    
+    // Start the timer
+    timer.start();
+    
     if (algorithm == "quick") {
         QuickSort<T> sorter;
         sorter.sort(list, 'x');
@@ -32,6 +40,10 @@ void sortAndSave(List<T>& list, const std::string& algorithm, const std::string&
         std::cerr << "Unknown sorting algorithm.\n";
         return;
     }
+    
+    // Stop the timer and get execution time
+    timer.stop();
+    executionTime = timer.result();
 
     std::cout << "\nSorted list:\n";
     list.printList();
@@ -40,6 +52,9 @@ void sortAndSave(List<T>& list, const std::string& algorithm, const std::string&
         list.saveToFile(outputFile);
         std::cout << "Saved sorted data to: " << outputFile << '\n';
     }
+    
+    // Print execution time after completing all operations
+    std::cout << "\nExecution time: " << executionTime << " ms\n";
 }
 
 template<typename T>
@@ -71,7 +86,7 @@ void handleTestMode(const std::string& algorithm, int size, const std::string& s
     } else if (sortType == "sorted66") {
         list.generateListSorted66(size);
     } else {
-        std::cerr << "Unknown sort type: use random, ascending, descending, ascending33 or ascending66.\n";
+        std::cerr << "Unknown sort type: use random, ascending, descending, sorted33 or sorted66.\n";
         return;
     }
 
@@ -148,7 +163,7 @@ int main(int argc, char* argv[]) {
             std::cerr << "Unsupported data type.\n";
             return 1;
         }
-
+    
     } else {
         std::cerr << "Unknown run type. Use --help for usage.\n";
         return 1;
