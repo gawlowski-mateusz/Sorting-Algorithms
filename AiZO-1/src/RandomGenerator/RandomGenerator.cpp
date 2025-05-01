@@ -14,27 +14,22 @@ int RandomGenerator::getInt() {
     return distrib(gen);
 }
 
-// Generate a random char in the full range (0-255)
+// Generate a random char in the range a-z
 char RandomGenerator::getChar() {
-    std::uniform_int_distribution<int> distrib(0, 255);
+    std::uniform_int_distribution<int> distrib('a', 'z');
     return static_cast<char>(distrib(gen));
 }
 
 // Generate a random float in the full float range
 float RandomGenerator::getFloat() {
-    std::uniform_real_distribution<float> distrib(
-        std::numeric_limits<float>::lowest(),
-        std::numeric_limits<float>::max()
-    );
+    std::uniform_real_distribution<float> distrib(-1e38, 1e38);
+
     return distrib(gen);
 }
 
 // Generate a random double in the full double range
 double RandomGenerator::getDouble() {
-    std::uniform_real_distribution<double> distrib(
-        std::numeric_limits<double>::lowest(),
-        std::numeric_limits<double>::max()
-    );
+    std::uniform_real_distribution<double> distrib(-1e156, 1e156);
     return distrib(gen);
 }
 

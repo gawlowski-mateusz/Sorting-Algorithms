@@ -27,6 +27,9 @@ private:
     Node<T>* tail;
     int size;
 
+    void generateSortedPortion(int size, int start, int end);
+    void generateRandomPortion(int size, int start);
+
 public:
     // Constructor and destructor
     List();
@@ -46,6 +49,8 @@ public:
     void generateList(int size);
     void generateListDescending(int size);
     void generateListAscending(int size);
+    void generateListSorted33(int size);
+    void generateListSorted66(int size);
     
     // Sorting and manipulation
     void sortList();

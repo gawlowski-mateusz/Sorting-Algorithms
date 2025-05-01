@@ -167,7 +167,7 @@ void List<T>::generateList(int size) {
             insertAtTail(static_cast<T>(rng.getFloat()));
         }
         else if (std::is_same<T, double>::value) {
-            insertAtTail(static_cast<T>(rng.getFloat()));
+            insertAtTail(static_cast<T>(rng.getDouble()));
         }
         else if (std::is_same<T, char>::value) {
             insertAtTail(static_cast<T>(rng.getChar()));
@@ -177,6 +177,81 @@ void List<T>::generateList(int size) {
             insertAtTail(static_cast<T>(0));
         }
     }
+}
+
+template <typename T>
+void List<T>::generateSortedPortion(int size, int start, int end) {
+    if (std::is_same<T, char>::value) {
+        int maxChars = std::min(end - start, 26);  // Only allow up to 'z'
+        char startChar = 'a';
+
+        for (int i = 0; i < maxChars; ++i) {
+            char currentChar = static_cast<char>(startChar + i);
+            insertAtTail(currentChar);
+        }
+
+        // If more sorted chars are requested beyond 'z', fill with 'z'
+        for (int i = maxChars + start; i < end; ++i) {
+            insertAtTail('z');
+        }
+    } 
+    else if (std::is_arithmetic<T>::value) {
+        for (int i = start; i < end; i++) {
+            insertAtTail(static_cast<T>(i));
+        }
+    }
+}
+
+// Helper function to generate the random portion of the list
+template <typename T>
+void List<T>::generateRandomPortion(int size, int start) {
+    RandomGenerator rng;
+    for (int i = start; i < size; i++) {
+        // Generate appropriate random value based on type T
+        if (std::is_same<T, int>::value) {
+            insertAtTail(static_cast<T>(rng.getInt()));
+        }
+        else if (std::is_same<T, float>::value) {
+            insertAtTail(static_cast<T>(rng.getFloat()));
+        }
+        else if (std::is_same<T, double>::value) {
+            insertAtTail(static_cast<T>(rng.getFloat()));
+        }
+        else if (std::is_same<T, char>::value) {
+            insertAtTail(static_cast<T>(rng.getChar()));
+        }
+        else {
+            insertAtTail(static_cast<T>(0));  // Default case for unsupported types
+        }
+    }
+}
+
+// Generate the first 33% of the list in sorted order, the rest in random order
+template <typename T>
+void List<T>::generateListSorted33(int size) {
+    clear();
+
+    int firstPartSize = static_cast<int>(size * 0.33);  // First 33% sorted
+
+    // Generate first 33% in sorted order
+    this->generateSortedPortion(size, 0, firstPartSize);
+
+    // Generate the rest (67%) in random order
+    this->generateRandomPortion(size, firstPartSize);
+}
+
+// Generate the first 66% of the list in sorted order, the rest in random order
+template <typename T>
+void List<T>::generateListSorted66(int size) {
+    clear();
+
+    int firstPartSize = static_cast<int>(size * 0.66);  // First 66% sorted
+
+    // Generate first 66% in sorted order
+    this->generateSortedPortion(size, 0, firstPartSize);
+
+    // Generate the rest (34%) in random order
+    this->generateRandomPortion(size, firstPartSize);
 }
 
 // Sort the list

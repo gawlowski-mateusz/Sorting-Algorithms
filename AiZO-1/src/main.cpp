@@ -60,11 +60,18 @@ template<typename T>
 void handleTestMode(const std::string& algorithm, int size, const std::string& sortType, const std::string& outputFile) {
     List<T> list;
 
-    if (sortType == "random") list.generateList(size);
-    else if (sortType == "ascending") list.generateListAscending(size);
-    else if (sortType == "descending") list.generateListDescending(size);
-    else {
-        std::cerr << "Unknown sort type: use random, ascending or descending.\n";
+    if (sortType == "random") {
+        list.generateList(size);
+    } else if (sortType == "ascending") {
+        list.generateListAscending(size);
+    } else if (sortType == "descending") {
+        list.generateListDescending(size);
+    } else if (sortType == "sorted33") {
+        list.generateListSorted33(size);
+    } else if (sortType == "sorted66") {
+        list.generateListSorted66(size);
+    } else {
+        std::cerr << "Unknown sort type: use random, ascending, descending, ascending33 or ascending66.\n";
         return;
     }
 
@@ -82,7 +89,7 @@ void printHelp() {
               << "Arguments:\n"
               << "  <algorithm>   quick | insertion | shell | heap\n"
               << "  <type>        int | float | double | char\n"
-              << "  <sort>        random | ascending | descending\n\n"
+              << "  <sort>        random | ascending | descending | sorted33 | sorted66\n\n"
               << "Examples:\n"
               << "  ./main --file quick int ./input.txt ./sorted.txt\n"
               << "  ./main --test heap double 100 random ./output.txt\n";
