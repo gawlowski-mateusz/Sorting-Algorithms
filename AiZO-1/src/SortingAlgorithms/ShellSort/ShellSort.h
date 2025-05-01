@@ -2,7 +2,7 @@
 #define SHELLSORT_H
 
 #include "../../List/List.h"
-#include "../../Vector/Vector.h"  // Include our custom Vector class
+#include "../../Vector/Vector.h"
 #include <cmath>
 
 template<typename T>
