@@ -2,8 +2,6 @@
 #define VECTOR_H
 
 #include <string>
-#include <algorithm>
-#include <type_traits>
 #include <stdexcept>
 #include "../RandomGenerator/RandomGenerator.h"
 
@@ -22,49 +20,32 @@ public:
     // Constructor and destructor
     Vector();
     explicit Vector(int initialCapacity);
-    Vector(int initialSize, const T& defaultValue);
     Vector(const Vector<T>& other);  // Copy constructor
     Vector<T>& operator=(const Vector<T>& other);  // Copy assignment
     ~Vector();
 
-    // Element access
-    T& at(int index);
-    const T& at(int index) const;
+    // Element access - only what's needed for sorting algorithms
     T& operator[](int index);
     const T& operator[](int index) const;
-    T& front();
-    const T& front() const;
-    T& back();
-    const T& back() const;
-    T* data_ptr();
 
     // Capacity
     bool empty() const;
     int getSize() const;
     int getCapacity() const;
     void reserve(int newCapacity);
-    void shrink_to_fit();
 
-    // Modifiers
+    // Modifiers needed for sorting algorithms
     void clear();
-    void insert(int index, const T& value);
-    void erase(int index);
     void pushBack(const T& value);
-    void popBack();
-    void resize(int newSize, const T& defaultValue = T());
 
-    // File operations
+    // File operations - kept for data loading
     int loadFromFile(const std::string &filename);
     
-    // Generation methods
+    // Generation methods - useful for testing sort algorithms
     void generateRandom(int size);
     void generateAscending(int size);
     void generateDescending(int size);
-    
-    // Algorithms
-    void sort();
-    bool search(const T& value) const;
-    
+
     // Utility
     void print() const;
 };

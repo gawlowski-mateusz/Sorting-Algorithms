@@ -1,8 +1,7 @@
 #include <iostream>
 #include <fstream>
-#include <algorithm>
-#include <stdexcept>
 #include <type_traits>
+#include <algorithm>
 
 // Default constructor
 template <typename T>
@@ -20,17 +19,6 @@ Vector<T>::Vector(int initialCapacity)
         data = new T[initialCapacity];
     } else {
         data = nullptr;
-    }
-}
-
-// Constructor with initial size and default value
-template <typename T>
-Vector<T>::Vector(int initialSize, const T& defaultValue)
-    : capacity(initialSize),
-      size(initialSize) {
-    data = new T[initialSize];
-    for (int i = 0; i < initialSize; ++i) {
-        data[i] = defaultValue;
     }
 }
 
@@ -94,25 +82,7 @@ void Vector<T>::resize(int newCapacity) {
     size = elementsToCopy;
 }
 
-// Element access with bounds checking
-template <typename T>
-T& Vector<T>::at(int index) {
-    if (index < 0 || index >= size) {
-        throw std::out_of_range("Index out of range");
-    }
-    return data[index];
-}
-
-// Const version
-template <typename T>
-const T& Vector<T>::at(int index) const {
-    if (index < 0 || index >= size) {
-        throw std::out_of_range("Index out of range");
-    }
-    return data[index];
-}
-
-// Element access without bounds checking
+// Element access without bounds checking - essential for sorting algorithms
 template <typename T>
 T& Vector<T>::operator[](int index) {
     return data[index];
@@ -122,48 +92,6 @@ T& Vector<T>::operator[](int index) {
 template <typename T>
 const T& Vector<T>::operator[](int index) const {
     return data[index];
-}
-
-// Access first element
-template <typename T>
-T& Vector<T>::front() {
-    if (size == 0) {
-        throw std::out_of_range("Vector is empty");
-    }
-    return data[0];
-}
-
-// Const version
-template <typename T>
-const T& Vector<T>::front() const {
-    if (size == 0) {
-        throw std::out_of_range("Vector is empty");
-    }
-    return data[0];
-}
-
-// Access last element
-template <typename T>
-T& Vector<T>::back() {
-    if (size == 0) {
-        throw std::out_of_range("Vector is empty");
-    }
-    return data[size - 1];
-}
-
-// Const version
-template <typename T>
-const T& Vector<T>::back() const {
-    if (size == 0) {
-        throw std::out_of_range("Vector is empty");
-    }
-    return data[size - 1];
-}
-
-// Get direct access to underlying array
-template <typename T>
-T* Vector<T>::data_ptr() {
-    return data;
 }
 
 // Check if vector is empty
@@ -202,74 +130,13 @@ void Vector<T>::reserve(int newCapacity) {
     }
 }
 
-// Reduce capacity to fit size
-template <typename T>
-void Vector<T>::shrink_to_fit() {
-    if (size < capacity) {
-        if (size > 0) {
-            T* newData = new T[size];
-            
-            // Copy existing elements
-            for (int i = 0; i < size; ++i) {
-                newData[i] = data[i];
-            }
-            
-            // Delete old array and update state
-            delete[] data;
-            data = newData;
-            capacity = size;
-        } else {
-            delete[] data;
-            data = nullptr;
-            capacity = 0;
-        }
-    }
-}
-
 // Clear vector
 template <typename T>
 void Vector<T>::clear() {
     size = 0;
 }
 
-// Insert element at specified position
-template <typename T>
-void Vector<T>::insert(int index, const T& value) {
-    if (index < 0 || index > size) {
-        throw std::out_of_range("Index out of range for insert");
-    }
-    
-    // If we need more space
-    if (size >= capacity) {
-        reserve(capacity == 0 ? 1 : capacity * 2);
-    }
-    
-    // Shift elements to make space
-    for (int i = size; i > index; --i) {
-        data[i] = data[i - 1];
-    }
-    
-    // Insert new element
-    data[index] = value;
-    size++;
-}
-
-// Erase element at specified position
-template <typename T>
-void Vector<T>::erase(int index) {
-    if (index < 0 || index >= size) {
-        throw std::out_of_range("Index out of range for erase");
-    }
-    
-    // Shift elements to remove the gap
-    for (int i = index; i < size - 1; ++i) {
-        data[i] = data[i + 1];
-    }
-    
-    size--;
-}
-
-// Add element to end
+// Add element to end - used by all sorting algorithms to build the vector
 template <typename T>
 void Vector<T>::pushBack(const T& value) {
     // If we need more space
@@ -278,31 +145,6 @@ void Vector<T>::pushBack(const T& value) {
     }
     
     data[size++] = value;
-}
-
-// Remove last element
-template <typename T>
-void Vector<T>::popBack() {
-    if (size > 0) {
-        size--;
-    }
-}
-
-// Resize vector with optional default value
-template <typename T>
-void Vector<T>::resize(int newSize, const T& defaultValue) {
-    if (newSize > capacity) {
-        reserve(newSize);
-    }
-    
-    // Initialize new elements if expanding
-    if (newSize > size) {
-        for (int i = size; i < newSize; ++i) {
-            data[i] = defaultValue;
-        }
-    }
-    
-    size = newSize;
 }
 
 // Load vector data from file
@@ -440,26 +282,6 @@ void Vector<T>::generateDescending(int newSize) {
             pushBack(static_cast<T>(i));
         }
     }
-}
-
-// Sort the vector
-template <typename T>
-void Vector<T>::sort() {
-    if (size <= 1) return; // Already sorted or empty
-    
-    // Use standard library sort
-    std::sort(data, data + size);
-}
-
-// Search for a value in the vector
-template <typename T>
-bool Vector<T>::search(const T& value) const {
-    for (int i = 0; i < size; ++i) {
-        if (data[i] == value) {
-            return true;
-        }
-    }
-    return false;
 }
 
 // Print the vector contents
