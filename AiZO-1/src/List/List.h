@@ -60,6 +60,7 @@ public:
     int getSize() const;
     void printList() const;
     void saveToFile(const std::string& filename) const;
+    int checkSortedList() const;
 };
 
 #include "List.tpp"

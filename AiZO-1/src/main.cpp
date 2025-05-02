@@ -5,6 +5,7 @@
 #include "./Timer/Timer.h"
 
 #include "./SortingAlgorithms/QuickSort/QuickSort.h"
+#include "./SortingAlgorithms/QuickSortDrunk/QuickSortDrunk.h"
 #include "./SortingAlgorithms/InsertionSort/InsertionSort.h"
 #include "./SortingAlgorithms/ShellSort/ShellSort.h"
 #include "./SortingAlgorithms/HeapSort/HeapSort.h"
@@ -27,6 +28,16 @@ void sortAndSave(List<T>& list, const std::string& algorithm, const std::string&
     if (algorithm == "quick") {
         QuickSort<T> sorter;
         sorter.sort(list, 'x');
+    } else if (algorithm.rfind("quick-drunk-", 0) == 0) {
+        // Extract drunk level from the algorithm string (e.g., "quick-drunk-3")
+        int drunk_level = std::stoi(algorithm.substr(12));  // "quick-drunk-" is 12 chars
+        if (drunk_level >= 1 && drunk_level <= 5) {
+            QuickSortDrunk<T> sorter(drunk_level);
+            sorter.sort(list, 'x');
+        } else {
+            std::cerr << "Invalid drunk level for QuickSortDrunk. Use 1-5.\n";
+            return;
+        }
     } else if (algorithm == "insertion") {
         InsertionSort<T> sorter;
         sorter.sort(list);
@@ -41,12 +52,15 @@ void sortAndSave(List<T>& list, const std::string& algorithm, const std::string&
         return;
     }
     
+    
     // Stop the timer and get execution time
     timer.stop();
     executionTime = timer.result();
 
     std::cout << "\nSorted list:\n";
     list.printList();
+
+    list.checkSortedList();
 
     if (!outputFile.empty()) {
         list.saveToFile(outputFile);
@@ -102,12 +116,14 @@ void printHelp() {
               << "./main --test <algorithm> <type> <size> <sort> <outputFile>\n"
               << "./main --help\n\n"
               << "Arguments:\n"
-              << "  <algorithm>   quick | insertion | shell | heap\n"
+              << "  <algorithm>   quick | quick-drunk-1..5 | insertion | shell | heap\n"
               << "  <type>        int | float | double | char\n"
               << "  <sort>        random | ascending | descending | sorted33 | sorted66\n\n"
               << "Examples:\n"
               << "  ./main --file quick int ./input.txt ./sorted.txt\n"
-              << "  ./main --test heap double 100 random ./output.txt\n";
+              << "  ./main --test heap double 100 random ./output.txt\n"
+              << "Note:\n"
+              << "  'quick-drunk-N' uses QuickSort with N% chance (1-5) of making a wrong comparison.\n";
 }
 
 int main(int argc, char* argv[]) {

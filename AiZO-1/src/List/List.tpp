@@ -395,3 +395,28 @@ void List<T>::saveToFile(const std::string& filename) const {
 
     fclose(file);
 }
+
+template <typename T>
+int List<T>::checkSortedList() const {
+    if (!head || !head->next) {
+        std::cout << "List is empty or contains a single element.\n";
+        return 100;  // 100% sorted if 0 or 1 element
+    }
+
+    int correctCount = 1;
+    Node<T>* current = head;
+
+    while (current->next) {
+        if (current->value <= current->next->value) {
+            correctCount++;
+            current = current->next;
+        } else {
+            break;
+        }
+    }
+
+    int percent = static_cast<int>((100.0 * correctCount) / size);
+    std::cout << correctCount << " out of " << size << " elements sorted correctly (" 
+              << percent << "%).\n";
+    return percent;
+}
