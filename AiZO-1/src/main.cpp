@@ -21,6 +21,7 @@ void sortAndSave(List<T>& list, const std::string& algorithm, const std::string&
     // Create timer object
     Timer timer;
     int executionTime = 0;
+    int percentCorrect = 0;
     
     // Start the timer
     timer.start();
@@ -61,6 +62,7 @@ void sortAndSave(List<T>& list, const std::string& algorithm, const std::string&
     list.printList();
 
     list.checkSortedList();
+    percentCorrect = list.checkSortedList();
 
     if (!outputFile.empty()) {
         list.saveToFile(outputFile);
