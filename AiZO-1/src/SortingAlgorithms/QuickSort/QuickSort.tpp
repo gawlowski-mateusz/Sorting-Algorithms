@@ -17,40 +17,34 @@ int QuickSort<T>::partition(Vector<T>& array, int left, int right, char pivot_po
             pivot = array[rng.getInt() % (right - left + 1) + left];
             break;
         default:
-            // Handle invalid pivot position
-            pivot = array[(left + right) / 2]; // Default to middle
+            pivot = array[(left + right) / 2];
             break;
     }
 
-    int l = left;
-    int r = right;
+    int l = left - 1;
+    int r = right + 1;
 
     while (true) {
-        while (array[l] < pivot) ++l;
-        while (array[r] > pivot) --r;
+        do { ++l; } while (array[l] < pivot);
+        do { --r; } while (array[r] > pivot);
 
-        if (l < r) {
-            // Swap array[l] and array[r]
-            T temp = array[l];
-            array[l] = array[r];
-            array[r] = temp;
-            ++l;
-            --r;
-        } else {
-            if (r == right) r--;
+        if (l >= r)
             return r;
-        }
+
+        // Swap array[l] and array[r]
+        T temp = array[l];
+        array[l] = array[r];
+        array[r] = temp;
     }
 }
 
 template <typename T>
 void QuickSort<T>::quickSort(Vector<T>& array, int left, int right, char pivot_position) {
-    if (left >= right) return;
-
-    int m = partition(array, left, right, pivot_position);
-
-    quickSort(array, left, m, pivot_position);
-    quickSort(array, m + 1, right, pivot_position);
+    if (left < right) {
+        int p = partition(array, left, right, pivot_position);
+        quickSort(array, left, p, pivot_position);
+        quickSort(array, p + 1, right, pivot_position);
+    }
 }
 
 template <typename T>

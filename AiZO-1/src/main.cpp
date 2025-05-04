@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cctype> // for std::tolower
 #include "./List/List.h"
 #include "./Timer/Timer.h"
 
@@ -12,29 +13,24 @@
 
 std::string toLower(const std::string& str) {
     std::string result;
-    for (char c : str) result += std::tolower(c);
+    for (char c : str)
+        result += std::tolower(static_cast<unsigned char>(c));
     return result;
 }
 
 template<typename T>
 void sortAndSave(List<T>& list, const std::string& algorithm, const std::string& outputFile) {
-    // Create timer object
     Timer timer;
-    int executionTime = 0;
-    int percentCorrect = 0;
-    
-    // Start the timer
     timer.start();
-    
+
     if (algorithm == "quick") {
         QuickSort<T> sorter;
-        sorter.sort(list, 'x');
+        sorter.sort(list, 'm');
     } else if (algorithm.rfind("quick-drunk-", 0) == 0) {
-        // Extract drunk level from the algorithm string (e.g., "quick-drunk-3")
-        int drunk_level = std::stoi(algorithm.substr(12));  // "quick-drunk-" is 12 chars
+        int drunk_level = std::stoi(algorithm.substr(12));
         if (drunk_level >= 1 && drunk_level <= 5) {
             QuickSortDrunk<T> sorter(drunk_level);
-            sorter.sort(list, 'x');
+            sorter.sort(list, 'm');
         } else {
             std::cerr << "Invalid drunk level for QuickSortDrunk. Use 1-5.\n";
             return;
@@ -44,7 +40,7 @@ void sortAndSave(List<T>& list, const std::string& algorithm, const std::string&
         sorter.sort(list);
     } else if (algorithm == "shell") {
         ShellSort<T> sorter;
-        sorter.sort(list, 2);
+        sorter.sort(list, 2);  // Replace 2 with a variable/constant if configurable
     } else if (algorithm == "heap") {
         HeapSort<T> sorter;
         sorter.sort(list);
@@ -52,25 +48,21 @@ void sortAndSave(List<T>& list, const std::string& algorithm, const std::string&
         std::cerr << "Unknown sorting algorithm.\n";
         return;
     }
-    
-    
-    // Stop the timer and get execution time
+
     timer.stop();
-    executionTime = timer.result();
 
     std::cout << "\nSorted list:\n";
     list.printList();
 
-    list.checkSortedList();
-    percentCorrect = list.checkSortedList();
+    int percentCorrect = list.checkSortedList();
+    std::cout << "Correctness: " << percentCorrect << "%\n";
 
     if (!outputFile.empty()) {
         list.saveToFile(outputFile);
         std::cout << "Saved sorted data to: " << outputFile << '\n';
     }
-    
-    // Print execution time after completing all operations
-    std::cout << "\nExecution time: " << executionTime << " ms\n";
+
+    std::cout << "\nExecution time: " << timer.result() << " ms\n";
 }
 
 template<typename T>
@@ -102,7 +94,7 @@ void handleTestMode(const std::string& algorithm, int size, const std::string& s
     } else if (sortType == "sorted66") {
         list.generateListSorted66(size);
     } else {
-        std::cerr << "Unknown sort type: use random, ascending, descending, sorted33 or sorted66.\n";
+        std::cerr << "Unknown sort type. Use random, ascending, descending, sorted33 or sorted66.\n";
         return;
     }
 
@@ -139,9 +131,7 @@ int main(int argc, char* argv[]) {
     if (run_type == "--help") {
         printHelp();
         return 0;
-    }
-
-    if (run_type == "--file") {
+    } else if (run_type == "--file") {
         if (argc < 5) {
             std::cerr << "Usage: ./main --file <algorithm> <type> <inputFile> [outputFile]\n";
             return 1;
@@ -169,7 +159,16 @@ int main(int argc, char* argv[]) {
 
         std::string algorithm = toLower(argv[2]);
         std::string type = toLower(argv[3]);
-        int size = std::stoi(argv[4]);
+        int size;
+        try {
+            size = std::stoi(argv[4]);
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Invalid size: not a number: " << argv[4] << "\n";
+            return 1;
+        } catch (const std::out_of_range& e) {
+            std::cerr << "Size is out of range: " << argv[4] << "\n";
+            return 1;
+        }
         std::string sortType = toLower(argv[5]);
         std::string outputFile = argv[6];
 
@@ -181,7 +180,6 @@ int main(int argc, char* argv[]) {
             std::cerr << "Unsupported data type.\n";
             return 1;
         }
-    
     } else {
         std::cerr << "Unknown run type. Use --help for usage.\n";
         return 1;
