@@ -62,7 +62,7 @@ void QuickSort<T>::sort(List<T>& list, char pivot_position) {
 
     quickSort(values, 0, values.getSize() - 1, pivot_position);
 
-    list.clear(); // Clear the original list
+    list.clear();
     
     for (int i = 0; i < values.getSize(); i++) {
         list.insertAtTail(values[i]);

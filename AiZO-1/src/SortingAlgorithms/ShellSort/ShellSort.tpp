@@ -60,7 +60,7 @@ void ShellSort<T>::sort(List<T>& list, int space_selector) {
 
     shellSort(values, space_selector);
 
-    list.clear(); // Clear the original list
+    list.clear();
     
     for (int i = 0; i < values.getSize(); i++) {
         list.insertAtTail(values[i]);

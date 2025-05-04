@@ -9,22 +9,21 @@
 template <typename T>
 class Vector {
 private:
-    T* data;              // Pointer to dynamic array
-    int capacity;         // Total allocated capacity
-    int size;             // Current size of the vector
+    T* data;
+    int capacity;
+    int size;
 
-    // Helper method to resize array when needed
     void resize(int newCapacity);
 
 public:
     // Constructor and destructor
     Vector();
     explicit Vector(int initialCapacity);
-    Vector(const Vector<T>& other);  // Copy constructor
-    Vector<T>& operator=(const Vector<T>& other);  // Copy assignment
+    Vector(const Vector<T>& other);
+    Vector<T>& operator=(const Vector<T>& other);
     ~Vector();
 
-    // Element access - only what's needed for sorting algorithms
+    // Element access
     T& operator[](int index);
     const T& operator[](int index) const;
 

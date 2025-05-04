@@ -51,7 +51,7 @@ void HeapSort<T>::sort(List<T>& list) {
         heapify(values, i, 0);
     }
 
-    list.clear(); // Clear the original list
+    list.clear();
     
     for (int i = 0; i < values.getSize(); i++) {
         list.insertAtTail(values[i]);

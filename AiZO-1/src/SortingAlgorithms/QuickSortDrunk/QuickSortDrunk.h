@@ -8,7 +8,7 @@
 template <typename T>
 class QuickSortDrunk {
 public:
-    QuickSortDrunk(int drunk = 0) : drunk(drunk) {}  // drunk is 0.1–100 (% chance to flip comparison)
+    QuickSortDrunk(int drunk = 0) : drunk(drunk) {}
     ~QuickSortDrunk() {}
 
     void sort(List<T>& list, char pivot_position = 'm');  // 'l', 'm', 'r', 'x'
