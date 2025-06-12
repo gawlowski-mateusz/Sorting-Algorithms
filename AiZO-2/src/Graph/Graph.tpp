@@ -285,13 +285,13 @@ void Graph<T>::deleteGraph() {
 
 // Load a graph from a file in MST format
 template <typename T>
-void Graph<T>::loadFromFileMst(const std::string& fileName) {
+int Graph<T>::loadFromFileMst(const std::string& fileName) {
     deleteGraph();
     std::ifstream file(fileName);
 
     if (!file.is_open()) {
         std::cout << "Cannot open file" << std::endl;
-        return;
+        return 1;
     }
 
     int edges;
@@ -329,6 +329,8 @@ void Graph<T>::loadFromFileMst(const std::string& fileName) {
     }
     
     file.close();
+
+    return 0;
 }
 
 // Load a graph from a file with floating-point numbers

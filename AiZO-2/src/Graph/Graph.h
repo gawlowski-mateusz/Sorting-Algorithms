@@ -75,13 +75,16 @@ public:
     void deleteGraph();
 
     // File operations
-    void loadFromFileMst(const std::string& fileName);
+    int loadFromFileMst(const std::string& fileName);
     int* loadFromFloat(const std::string& fileName);
     int loadFromSP(const std::string& fileName);
     
     // Getters
     int getVerticesNumber() const { return vertices_number; }
     int getEdgeNumber() const { return edge_number; }
+    VertexList<T>* getAdjacencyList() const { return adjacency_list; }
+    Edge<T>*** getAdjacencyMatrix() const { return adjacency_matrix; }
+    Edge<T>* getNullEdge() const { return NULL_EDGE; }
 };
 
 #include "Graph.tpp"
