@@ -3,20 +3,20 @@
 
 #include "../Graph/Graph.h"
 
-template <typename T>
 class FordFulkerson {
 private:
-    Graph<T> graph;
-    bool bfsAdjacencyMatrix(int** residualGraph, int startVertex, int endVertex, int parent[]);
-    bool dfsAdjacencyMatrix(int** residualGraph, int startVertex, int endVertex, int parent[], bool* visited = nullptr);
+    Graph graph;
+
+    bool bfsAdjacencyMatrix(int** residualGraph, int start, int end, int* parent);
+    bool dfsAdjacencyMatrix(int** residualGraph, int start, int end, int* parent, bool* visited);
+    void freeResidualGraph(int** residualGraph, int size);
+    int** buildResidualMatrix();
 
 public:
-    explicit FordFulkerson(const Graph<T>& graph);
+    explicit FordFulkerson(const Graph& graph);
 
-    void fordFulkersonBFSAdjacencyMatrix(int startVertex, int endVertex);
-    void fordFulkersonDFSAdjacencyMatrix(int startVertex, int endVertex);
+    void fordFulkersonBFSAdjacencyMatrix(int start, int end);
+    void fordFulkersonDFSAdjacencyMatrix(int start, int end);
 };
-
-#include "FordFulkerson.tpp"
 
 #endif // FORDFULKERSON_H

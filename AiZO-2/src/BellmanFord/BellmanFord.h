@@ -3,19 +3,16 @@
 
 #include "../Graph/Graph.h"
 
-template <typename T>
 class BellmanFord {
 private:
-    Graph<T> graph;
-    void print(int* parent, int* distance, int startingVertex);
+    Graph graph;
+    void print(int parent[], int distance[]);
 
 public:
-    BellmanFord(const Graph<T>& graph);
+    explicit BellmanFord(const Graph& graph);
 
     void bellmanFordAdjacencyList(int startingVertex);
     void bellmanFordAdjacencyMatrix(int startingVertex);
 };
-
-#include "BellmanFord.tpp"
 
 #endif // BELLMANFORD_H

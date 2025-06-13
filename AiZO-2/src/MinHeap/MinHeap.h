@@ -4,37 +4,43 @@
 #include <string>
 #include "../Graph/Graph.h"
 
-template <typename T>
 class MinHeap {
 private:
-    Edge<T>* array;
-    int size;
-    Graph<T> graph;
-    const static int ARRAY_SIZE = 1000;
+    static const int ARRAY_SIZE = 321000;
+    Edge* array;
+    unsigned int size;
+    Graph graph;
 
     int left(int index);
     int right(int index);
     int parent(int index);
-    void shiftUp(int i);
-    void shiftDown(int i);
 
-public:
-    MinHeap(Graph<T> graph);
-    ~MinHeap();
+    void shiftUp(int index);
+    void shiftDown(int index);
 
     void buildHeap();
-    void add(Edge<T>* edge);
-    void removeAll();
+    void initHeap();
     void removeElement(int index);
+
+public:
+    explicit MinHeap(Graph graph);
+    ~MinHeap();
+
+    void add(Edge* edge);
+    void removeAll();
+    bool isEmpty();
     int isInside(int value);
-    void display(std::string sp = "", std::string sn = "", int v = 0);
+    Edge poll();
+
     void heapSort();
+    void display(std::string sp, std::string sn, int v);
+
     void loadGraphFromAdjacencyList();
     void loadGraphFromAdjacencyMatrix();
-    bool isEmpty();
-    Edge<T> poll();
-};
 
-#include "MinHeap.tpp"
+    void setGraph(Graph graph);
+    void loadFromFile(std::string filename, int structureSize);
+    void saveToFile();
+};
 
 #endif // MINHEAP_H

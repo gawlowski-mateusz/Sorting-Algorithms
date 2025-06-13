@@ -4,26 +4,23 @@
 #include "../Graph/Graph.h"
 #include "../MinHeap/MinHeap.h"
 
-template <typename T>
 class Dijkstra {
 private:
-    Graph<T> graph;
+    Graph graph;
     int* parent;
     int* distance;
-    bool* sptSet;
+    bool* visited;
     int startingVertex;
 
-    void relax(int u, int v, int weight, MinHeap<T>& heap);
-    void print();
+    void relax(int u, int v, int w, MinHeap& heap);
+    void print() const;
 
 public:
-    Dijkstra(const Graph<T>& graph);
+    explicit Dijkstra(const Graph& graph);
     ~Dijkstra();
 
-    void dijkstraAdjacencyList(int startingVertex);
-    void dijkstraAdjacencyMatrix(int startingVertex);
+    void dijkstraAdjacencyList(int start);
+    void dijkstraAdjacencyMatrix(int start);
 };
-
-#include "Dijkstra.tpp"
 
 #endif // DIJKSTRA_H

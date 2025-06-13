@@ -1,33 +1,36 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-template <typename T>
+#include <string>
+
 struct ListNode {
-    T data;
-    ListNode* prev = nullptr;
+    int data;
     ListNode* next = nullptr;
+    ListNode* prev = nullptr;
 };
 
-template <typename T>
 class Queue {
 private:
-    ListNode<T>* head;
-    ListNode<T>* tail;
+    ListNode* head;
+    ListNode* tail;
     int size;
 
-    ListNode<T>* findIndex(int index);
+    ListNode* findIndex(int index);
     void removeIndex(int index);
 
 public:
     Queue();
     ~Queue();
 
-    void push(T value);
-    T pop();
+    void push(int value);
+    int pop();
     void removeAll();
-    bool isEmpty();
-};
+    void display() const;
 
-#include "Queue.tpp"
+    bool isEmpty() const;
+    int IsValueInList(int value);
+    int loadFromFile(const std::string& fileName);
+    void generateList(int count);
+};
 
 #endif // QUEUE_H

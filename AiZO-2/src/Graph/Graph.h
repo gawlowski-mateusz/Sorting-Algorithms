@@ -2,91 +2,63 @@
 #define GRAPH_H
 
 #include <string>
-#include <iostream>
-#include <fstream>
-#include <cmath>
-#include <ctime>
-#include <cstdlib>
 
-template <typename T>
-class Edge;
+struct Edge {
+    int src;
+    int dst;
+    int weight;
+    Edge* next;
 
-template <typename T>
-class VertexList;
-
-template <typename T>
-class Edge {
-public:
-    int source;
-    int destination;
-    T weight;
-    Edge<T>* next;
-
-    Edge(int src, int dst, T wgt) : 
-        source(src),
-        destination(dst),
-        weight(wgt),
-        next(nullptr) {}
-    
-    Edge() : source(0), destination(0), weight(0), next(nullptr) {}
+    Edge(int src, int destination, int weight);
+    Edge();
 };
 
-template <typename T>
-class VertexList {
-public:
-    Edge<T>* head;
-    
-    VertexList() : head(nullptr) {}
+struct VertexList {
+    Edge* head = nullptr;
 };
 
-template <typename T>
 class Graph {
 private:
-    int vertices_number;
-    int edge_number;
-    VertexList<T>* adjacency_list;
-    Edge<T>*** adjacency_matrix;
-    Edge<T>* NULL_EDGE;
-
-    // Helper methods
     void createGraph(int vertices);
+    void addUndirectedEdge(int src, int dst, int weight);
+    void addDirectedEdge(int src, int dst, int weight);
     void printMatrix();
     void printList();
 
+    int numberOfVertices = 0;
+    int numberOfEdges = 0;
+    VertexList* AdjacencyList = nullptr;
+    Edge*** AdjacencyMatrix;
+    Edge* NULL_EDGE;
+
 public:
-    // Constructor and destructor
     Graph();
     ~Graph();
 
-    // Edge manipulation methods
-    void addUndirectedEdge(int src, int dst, T weight);
-    void addDirectedEdge(int src, int dst, T weight);
+    int loadFromFileMst(std::string fileName);
+    int* loadFromFloat(std::string fileName);
+    int loadFromSP(std::string fileName);
+
+    void deleteEdge(int source, int destination);
+    void deleteTest(Edge** e1, Edge** e2);
+
+    void generateUndirectedGraph(int numberOfVertices, double density);
+    void generateDirectedGraph(int numberOfVertices, double density);
+
     bool removeDirectedEdge(int src, int dst);
     bool removeUndirectedEdge(int src, int dst);
 
-    // Graph generation methods
-    void generateUndirectedGraph(int numberOfVertices, int density);
-    void generateDirectedGraph(int numberOfVertices, int density);
-
-    // Utility methods
     void print();
     void deleteList();
     void deleteMatrix();
     void deleteGraph();
 
-    // File operations
-    int loadFromFileMst(const std::string& fileName);
-    int* loadFromFloat(const std::string& fileName);
-    int loadFromSP(const std::string& fileName);
-    
     // Getters
-    int getVerticesNumber() const { return vertices_number; }
-    int getEdgeNumber() const { return edge_number; }
-    VertexList<T>* getAdjacencyList() const { return adjacency_list; }
-    Edge<T>*** getAdjacencyMatrix() const { return adjacency_matrix; }
-    Edge<T>* getNullEdge() const { return NULL_EDGE; }
+    int getVerticesNumber() const;
+    int getEdgeNumber() const;
+    VertexList* getAdjacencyList() const;
+    Edge*** getAdjacencyMatrix() const;
+    Edge* getNullEdge() const;
 };
-
-#include "Graph.tpp"
 
 #endif // GRAPH_H

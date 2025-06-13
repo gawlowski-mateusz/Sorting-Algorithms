@@ -1,33 +1,36 @@
 #ifndef STACK_H
 #define STACK_H
 
-template <typename T>
+#include <string>
+
 struct StackNode {
-    T data;
-    StackNode* prev = nullptr;
+    int data;
     StackNode* next = nullptr;
+    StackNode* prev = nullptr;
 };
 
-template <typename T>
 class Stack {
 private:
-    StackNode<T>* head;
-    StackNode<T>* tail;
+    StackNode* head;
+    StackNode* tail;
     int size;
 
-    StackNode<T>* findIndex(int index);
+    StackNode* findIndex(int index);
     void removeIndex(int index);
 
 public:
     Stack();
     ~Stack();
 
-    void push(T value);
-    T pop();
+    void push(int value);
+    int pop();
     void removeAll();
-    bool isEmpty();
-};
+    void display() const;
 
-#include "Stack.tpp"
+    bool isEmpty() const;
+    int IsValueInList(int value);
+    int loadFromFile(const std::string& fileName);
+    void generateList(int count);
+};
 
 #endif // STACK_H
