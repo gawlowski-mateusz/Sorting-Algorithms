@@ -117,19 +117,19 @@ void handleTestMode(const string& algorithm, int size, double density, int count
             fordFulkerson.fordFulkersonDFSAdjacencyMatrix(startingVertex, endVertex);
         } else if (algorithm == "dijkstra") {
             Dijkstra dijkstra(tempGraph);
-            dijkstra.dijkstraAdjacencyList(startingVertex);
+            // dijkstra.dijkstraAdjacencyList(startingVertex);
             dijkstra.dijkstraAdjacencyMatrix(startingVertex);
         } else if (algorithm == "bellman-ford") {
             BellmanFord bellmanFord(tempGraph);
-            bellmanFord.bellmanFordAdjacencyList(startingVertex);
+            // bellmanFord.bellmanFordAdjacencyList(startingVertex);
             bellmanFord.bellmanFordAdjacencyMatrix(startingVertex);
         } else if (algorithm == "kruskal") {
             Kruskal kruskal(tempGraph);
-            kruskal.kruskalAdjacencyList();
+            // kruskal.kruskalAdjacencyList();
             kruskal.kruskalAdjacencyMatrix();
         } else if (algorithm == "prim") {
             Prim prim(tempGraph);
-            prim.primAdjacencyList();
+            // prim.primAdjacencyList();
             prim.primAdjacencyMatrix();
         } else {
             cerr << "Unknown algorithm: " << algorithm << '\n';

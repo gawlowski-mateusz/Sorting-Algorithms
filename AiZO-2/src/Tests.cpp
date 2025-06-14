@@ -1,0 +1,114 @@
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <string>
+#include "./Graph/Graph.h"
+#include "./FordFulkerson/FordFulkerson.h"
+#include "./Dijkstra/Dijkstra.h"
+#include "./BellmanFord/BellmanFord.h"
+#include "./Kruskal/Kruskal.h"
+#include "./Prim/Prim.h"
+#include "./Timer/Timer.h"
+
+
+using namespace std;
+
+void handleTestMode(const string& algorithm, int size, double density, int count = 1, const string& outputFile = "") {
+    if (density < 0.0 || density > 1.0) {
+        cerr << "Density must be between 0 and 1.\n";
+        return;
+    }
+
+    double totalTime = 0.0;
+
+    for (int i = 0; i < count; ++i) {
+        cout << "Run #" << i + 1 << " of " << count << "\n";
+
+        Graph tempGraph;
+        tempGraph.generateUndirectedGraph(size, density);
+
+        int startingVertex = 0;
+        int endVertex = size - 1;
+
+        Timer timer;
+        timer.start();
+
+        if (algorithm == "ford-fulkerson-bfs") {
+            FordFulkerson fordFulkerson(tempGraph);
+            fordFulkerson.fordFulkersonBFSAdjacencyMatrix(startingVertex, endVertex);
+        } else if (algorithm == "ford-fulkerson-dfs") {
+            FordFulkerson fordFulkerson(tempGraph);
+            fordFulkerson.fordFulkersonDFSAdjacencyMatrix(startingVertex, endVertex);
+        } else if (algorithm == "dijkstra") {
+            Dijkstra dijkstra(tempGraph);
+            // dijkstra.dijkstraAdjacencyList(startingVertex);
+            dijkstra.dijkstraAdjacencyMatrix(startingVertex);
+        } else if (algorithm == "bellman-ford") {
+            BellmanFord bellmanFord(tempGraph);
+            // bellmanFord.bellmanFordAdjacencyList(startingVertex);
+            bellmanFord.bellmanFordAdjacencyMatrix(startingVertex);
+        } else if (algorithm == "kruskal") {
+            Kruskal kruskal(tempGraph);
+            // kruskal.kruskalAdjacencyList();
+            kruskal.kruskalAdjacencyMatrix();
+        } else if (algorithm == "prim") {
+            Prim prim(tempGraph);
+            // prim.primAdjacencyList();
+            prim.primAdjacencyMatrix();
+        } else {
+            cerr << "Unknown algorithm: " << algorithm << '\n';
+            return;
+        }
+
+        timer.stop();
+        double time = timer.result();
+        totalTime += time;
+
+        cout << "Execution time: " << time << " ms\n";
+        cout << "-----------------------------\n";
+    }
+
+    double avgTime = totalTime / count;
+    cout << "\nAverage execution time over " << count << " runs: "
+         << avgTime << " ms\n";
+
+    if (!outputFile.empty()) {
+        ofstream out(outputFile, ios::app);
+        if (!out) {
+            cerr << "Failed to open output file: " << outputFile << "\n";
+        } else {
+            out << size << ";" << density << ";" << avgTime << "\n";
+            out.close();
+            cout << "Saved result to: " << outputFile << "\n";
+        }
+    }
+}
+
+void runAllTests() {
+    vector<int> sizes = {50, 100, 200, 500, 1000};
+    vector<double> densities = {0.25, 0.5, 0.99};
+    int count = 100;
+
+    vector<pair<string, string>> algorithms = {
+        {"dijkstra", "./Results/dijkstra.csv"},
+        {"bellman-ford", "./Results/bellman-ford.csv"},
+        {"kruskal", "./Results/kruskal.csv"},
+        {"prim", "./Results/prim.csv"},
+        {"ford-fulkerson-dfs", "./Results/ford-fulkerson-dfs.csv"},
+        {"ford-fulkerson-bfs", "./Results/ford-fulkerson-bfs.csv"}
+    };
+
+    for (const auto& [algorithm, outputFile] : algorithms) {
+        cout << "\n=== Running tests for algorithm: " << algorithm << " ===\n";
+        for (int size : sizes) {
+            for (double density : densities) {
+                cout << "Testing with size = " << size << ", density = " << density << "\n";
+                handleTestMode(algorithm, size, density, count, outputFile);
+            }
+        }
+    }
+}
+
+int main(int argc, char* argv[]) {
+    runAllTests();
+}
