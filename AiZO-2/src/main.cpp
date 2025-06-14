@@ -7,6 +7,7 @@
 #include "./BellmanFord/BellmanFord.h"
 #include "./Kruskal/Kruskal.h"
 #include "./Prim/Prim.h"
+#include "./Timer/Timer.h"
 
 using namespace std;
 
@@ -14,20 +15,22 @@ Graph graph;
 
 void printHelp() {
     cout << "\nUsage:\n"
-         << "./main --file <algorithm> <inputFile>\n"
-         << "./main --test <algorithm> <size> <density>\n"
+         << "./main --file <algorithm> <inputFile> [outputFile]\n"
+         << "./main --test <algorithm> <size> <density> [count] [outputFile]\n"
          << "./main --help\n\n"
          << "Arguments:\n"
-        << "  <algorithm>   ford-fulkerson-bfs | ford-fulkerson-dfs | bellman-ford | dijkstra  | kruskal | prim\n"
+         << "  <algorithm>   ford-fulkerson-bfs | ford-fulkerson-dfs | bellman-ford | dijkstra | kruskal | prim\n"
          << "  <inputFile>   Path to graph file\n"
-         << "  <size>        Number of vertices\n"
-         << "  <density>     Edge density (0.0 to 1.0)\n\n"
+         << "  <size>        Number of vertices (for test mode)\n"
+         << "  <density>     Edge density (0.0 to 1.0)\n"
+         << "  <count>       Number of test repetitions (default: 1)\n"
+         << "  <outputFile>  Optional CSV log file to store: size;density;avgTime\n\n"
          << "Examples:\n"
-         << "  ./main --file dijkstra ./input.txt\n"
-         << "  ./main --test ford-fulkerson-bfs 10 0.6\n";
+         << "  ./main --file dijkstra ./input.txt results.csv\n"
+         << "  ./main --test prim 15 1.0 50 results.csv\n";
 }
 
-void handleFileMode(const string& algorithm, const string& inputFile) {
+void handleFileMode(const string& algorithm, const string& inputFile, const string& outputFile = "") {
     int startingVertex = 0;
     int endVertex;
     
@@ -38,12 +41,16 @@ void handleFileMode(const string& algorithm, const string& inputFile) {
     
     endVertex = graph.getVerticesNumber() - 1;
 
+    Timer timer;
+    timer.start();
+
     if (algorithm == "ford-fulkerson-bfs") {
         FordFulkerson fordFulkerson(graph);
         cout << "FordFulkerson BFS" << endl;
         fordFulkerson.fordFulkersonBFSAdjacencyMatrix(startingVertex, endVertex);
     } else if (algorithm == "ford-fulkerson-dfs") {
         FordFulkerson fordFulkerson(graph);
+        cout << "FordFulkerson DFS" << endl;
         fordFulkerson.fordFulkersonDFSAdjacencyMatrix(startingVertex, endVertex);
     } else if (algorithm == "bellman-ford") {
         BellmanFord bellmanFord(graph);
@@ -63,78 +70,98 @@ void handleFileMode(const string& algorithm, const string& inputFile) {
         kruskal.kruskalAdjacencyMatrix();
     } else {
         cerr << "Unknown algorithm: " << algorithm << '\n';
+        return;
+    }
+
+    timer.stop();
+    double execTime = timer.result();
+    cout << "Execution time: " << execTime << " ms\n";
+
+    if (!outputFile.empty()) {
+        ofstream out(outputFile, ios::app);
+        if (!out) {
+            cerr << "Failed to open output file: " << outputFile << "\n";
+        } else {
+            out << graph.getVerticesNumber() << ";N/A;" << execTime << "\n";
+            out.close();
+            cout << "Saved result to: " << outputFile << "\n";
+        }
     }
 }
 
-void handleTestMode(const string& algorithm, int size, double density) {
-    cout << "DEBUG: Starting handleTestMode\n";
-    cout << "DEBUG: Algorithm: " << algorithm << ", Size: " << size << ", Density: " << density << "\n";
-
+void handleTestMode(const string& algorithm, int size, double density, int count = 1, const string& outputFile = "") {
     if (density < 0.0 || density > 1.0) {
         cerr << "Density must be between 0 and 1.\n";
         return;
     }
 
-    cout << "DEBUG: Creating Graph object\n";
-    
-    cout << "DEBUG: Graph created, calling generateDirectedGraph\n";
-    graph.generateUndirectedGraph(size, density);
+    double totalTime = 0.0;
 
-    graph.print();
-    
-    cout << "DEBUG: Graph generated successfully\n";
-    cout << "DEBUG: Vertices: " << graph.getVerticesNumber() << "\n";
-    cout << "DEBUG: Edges: " << graph.getEdgeNumber() << "\n";
+    for (int i = 0; i < count; ++i) {
+        cout << "Run #" << i + 1 << " of " << count << "\n";
 
-    int startingVertex = 0;
-    int endVertex = size - 1;
+        Graph tempGraph;
+        tempGraph.generateUndirectedGraph(size, density);
 
-    if (algorithm == "ford-fulkerson-bfs") {
-        cout << "DEBUG: Creating FordFulkerson solver\n";
-        FordFulkerson fordFulkerson(graph);
-        cout << "FordFulkerson BFS" << endl;
-        fordFulkerson.fordFulkersonBFSAdjacencyMatrix(startingVertex, endVertex);
-    } else if (algorithm == "ford-fulkerson-dfs") {
-        cout << "DEBUG: Creating FordFulkerson solver\n";
-        FordFulkerson fordFulkerson(graph);
-        cout << "FordFulkerson DFS" << endl;
-        fordFulkerson.fordFulkersonDFSAdjacencyMatrix(startingVertex, endVertex);
-    } else if (algorithm == "dijkstra") {
-        cout << "DEBUG: Creating Dijkstra solver\n";
-        try {
-            Dijkstra dijkstra(graph);
-            cout << "DEBUG: Dijkstra solver created, calling dijkstraAdjacencyList\n";
+        int startingVertex = 0;
+        int endVertex = size - 1;
+
+        Timer timer;
+        timer.start();
+
+        if (algorithm == "ford-fulkerson-bfs") {
+            FordFulkerson fordFulkerson(tempGraph);
+            fordFulkerson.fordFulkersonBFSAdjacencyMatrix(startingVertex, endVertex);
+        } else if (algorithm == "ford-fulkerson-dfs") {
+            FordFulkerson fordFulkerson(tempGraph);
+            fordFulkerson.fordFulkersonDFSAdjacencyMatrix(startingVertex, endVertex);
+        } else if (algorithm == "dijkstra") {
+            Dijkstra dijkstra(tempGraph);
             dijkstra.dijkstraAdjacencyList(startingVertex);
             dijkstra.dijkstraAdjacencyMatrix(startingVertex);
-            cout << "DEBUG: Dijkstra completed successfully\n";
-        } catch (const exception& e) {
-            cerr << "DEBUG: Exception in Dijkstra: " << e.what() << "\n";
-        } catch (...) {
-            cerr << "DEBUG: Unknown exception in Dijkstra\n";
+        } else if (algorithm == "bellman-ford") {
+            BellmanFord bellmanFord(tempGraph);
+            bellmanFord.bellmanFordAdjacencyList(startingVertex);
+            bellmanFord.bellmanFordAdjacencyMatrix(startingVertex);
+        } else if (algorithm == "kruskal") {
+            Kruskal kruskal(tempGraph);
+            kruskal.kruskalAdjacencyList();
+            kruskal.kruskalAdjacencyMatrix();
+        } else if (algorithm == "prim") {
+            Prim prim(tempGraph);
+            prim.primAdjacencyList();
+            prim.primAdjacencyMatrix();
+        } else {
+            cerr << "Unknown algorithm: " << algorithm << '\n';
+            return;
         }
-    } else if (algorithm == "bellman-ford") {
-        cout << "DEBUG: Creating BellmanFord solver\n";
-        BellmanFord bellmanFord(graph);
-        bellmanFord.bellmanFordAdjacencyList(startingVertex);
-        bellmanFord.bellmanFordAdjacencyMatrix(startingVertex);
-    } else if (algorithm == "kruskal") {
-        cout << "DEBUG: Creating Kruskal solver\n";
-        Kruskal kruskal(graph);
-        kruskal.kruskalAdjacencyList();
-        kruskal.kruskalAdjacencyMatrix();
-    } else if (algorithm == "prim") {
-        cout << "DEBUG: Creating Prim solver\n";
-        Prim prim(graph);
-        prim.primAdjacencyList();
-        prim.primAdjacencyMatrix();
-    } else {
-        cerr << "Unknown algorithm: " << algorithm << '\n';
+
+        timer.stop();
+        double time = timer.result();
+        totalTime += time;
+
+        cout << "Execution time: " << time << " ms\n";
+        cout << "-----------------------------\n";
     }
-    
-    cout << "DEBUG: handleTestMode completed\n";
+
+    double avgTime = totalTime / count;
+    cout << "\nAverage execution time over " << count << " runs: "
+         << avgTime << " ms\n";
+
+    if (!outputFile.empty()) {
+        ofstream out(outputFile, ios::app);
+        if (!out) {
+            cerr << "Failed to open output file: " << outputFile << "\n";
+        } else {
+            out << size << ";" << density << ";" << avgTime << "\n";
+            out.close();
+            cout << "Saved result to: " << outputFile << "\n";
+        }
+    }
 }
 
 int main(int argc, char* argv[]) {
+    srand(time(NULL));
     cout << "DEBUG: Program started\n";
     
     if (argc < 2) {
@@ -150,23 +177,39 @@ int main(int argc, char* argv[]) {
         return 0;
     } else if (mode == "--file") {
         if (argc < 4) {
-            cerr << "Usage: ./main --file <algorithm> <inputFile>\n";
+            cerr << "Usage: ./main --file <algorithm> <inputFile> [outputFile]\n";
             return 1;
         }
 
         string algorithm = argv[2];
         string inputFile = argv[3];
-        handleFileMode(algorithm, inputFile);
+        string outputFile = (argc >= 5) ? argv[4] : "";
+        handleFileMode(algorithm, inputFile, outputFile);
     } else if (mode == "--test") {
         if (argc < 5) {
-            cerr << "Usage: ./main --test <algorithm> <size> <density>\n";
+            cerr << "Usage: ./main --test <algorithm> <size> <density> [count] [outputFile]\n";
             return 1;
         }
 
         string algorithm = argv[2];
         int size = stoi(argv[3]);
         double density = stod(argv[4]);
-        handleTestMode(algorithm, size, density);
+
+        int count = 1;
+        if (argc >= 6) {
+            count = stoi(argv[5]);
+            if (count < 1) {
+                cerr << "Count must be a positive integer.\n";
+                return 1;
+            }
+        }
+
+        string outputFile = "";
+        if (argc >= 7) {
+            outputFile = argv[6];
+        }
+
+        handleTestMode(algorithm, size, density, count, outputFile);
     } else {
         cerr << "Unknown mode. Use --help for usage.\n";
         return 1;
