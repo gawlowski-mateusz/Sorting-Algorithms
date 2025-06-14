@@ -1,8 +1,9 @@
+#include <iostream>
+#include <iomanip>
+#include <cstdio>
 #include "Kruskal.h"
 #include "../MinHeap/MinHeap.h"
 
-#include <iostream>
-#include <cstdio>
 
 using std::cout;
 using std::endl;
@@ -104,15 +105,22 @@ void Kruskal::kruskalAdjacencyMatrix() {
 }
 
 void Kruskal::printMST(Edge edgesIncluded[]) {
-    std::printf("Src|Dst|Wght\n");
+    std::cout << "Minimum Spanning Tree Edges:\n";
+    std::cout << std::setw(5) << "Src" 
+              << std::setw(6) << "Dst" 
+              << std::setw(9) << "Weight\n";
+    std::cout << "---------------------------\n";
 
-    int V = graph.getVerticesNumber();
     int totalWeight = 0;
+    int V = graph.getVerticesNumber();
 
     for (int i = 0; i < V - 1; ++i) {
-        std::printf("  %d|  %d|   %d\n", edgesIncluded[i].src, edgesIncluded[i].dst, edgesIncluded[i].weight);
+        std::cout << std::setw(5) << edgesIncluded[i].src
+                  << std::setw(6) << edgesIncluded[i].dst
+                  << std::setw(8) << edgesIncluded[i].weight << "\n";
         totalWeight += edgesIncluded[i].weight;
     }
 
-    cout << "Total Weight of MST: " << totalWeight << endl;
+    std::cout << "---------------------------\n";
+    std::cout << "Total Weight of MST: " << totalWeight << "\n";
 }

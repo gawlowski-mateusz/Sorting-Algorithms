@@ -153,7 +153,6 @@ bool Graph::removeUndirectedEdge(int src, int dst) {
 }
 
 void Graph::generateUndirectedGraph(int numberOfVertices, double density) {
-    srand(time(NULL));
     createGraph(numberOfVertices);
     
     int maxPossibleEdges = (numberOfVertices * (numberOfVertices - 1)) / 2;
@@ -190,7 +189,6 @@ void Graph::generateUndirectedGraph(int numberOfVertices, double density) {
 }
 
 void Graph::generateDirectedGraph(int numberOfVertices, double density) {
-    srand(time(NULL));
     createGraph(numberOfVertices);
     
     int maxPossibleEdges = numberOfVertices * (numberOfVertices - 1);

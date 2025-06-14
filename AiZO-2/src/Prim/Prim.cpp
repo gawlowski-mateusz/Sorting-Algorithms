@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include "Prim.h"
 #include "../Graph/Graph.h"
 #include "../MinHeap/MinHeap.h"
@@ -34,15 +35,24 @@ void Prim::primAdjacencyList() {
 
 
 void Prim::printMST(Edge edgesIncluded[]) {
-	std::printf("Src|Dst|Wght\n");
-	for (int i = 0; i < graph.getVerticesNumber() - 1; ++i) {
-		std::printf("  %d|  %d|   %d\n", edgesIncluded[i].src, edgesIncluded[i].dst, edgesIncluded[i].weight);
-	}
-	int result =0;
-	for (int i = 0; i < graph.getVerticesNumber()-1; ++i) {
-		result+=edgesIncluded[i].weight;
-	}
-	std::cout<<result<<std::endl;
+    std::cout << "Minimum Spanning Tree Edges:\n";
+    std::cout << std::setw(5) << "Src" 
+              << std::setw(6) << "Dst" 
+              << std::setw(9) << "Weight\n";
+    std::cout << "---------------------------\n";
+
+    int totalWeight = 0;
+    int V = graph.getVerticesNumber();
+
+    for (int i = 0; i < V - 1; ++i) {
+        std::cout << std::setw(5) << edgesIncluded[i].src
+                  << std::setw(6) << edgesIncluded[i].dst
+                  << std::setw(8) << edgesIncluded[i].weight << "\n";
+        totalWeight += edgesIncluded[i].weight;
+    }
+
+    std::cout << "---------------------------\n";
+    std::cout << "Total Weight of MST: " << totalWeight << "\n";
 }
 
 

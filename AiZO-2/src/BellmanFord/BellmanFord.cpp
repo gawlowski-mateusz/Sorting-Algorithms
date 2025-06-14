@@ -111,13 +111,13 @@ void BellmanFord::print(int parent[], int distance[]) {
             continue;
         }
 
-        std::cout << "Vertex " << i << " (cost " << distance[i] << "): ";
+        std::cout << "Vertex " << i << ": ";
         std::string path = std::to_string(i);
         int v = i;
         while (parent[v] != v) {
             path = std::to_string(parent[v]) + " -> " + path;
             v = parent[v];
         }
-        std::cout << path << "\n";
+        std::cout << path << " (cost " << distance[i] << ")\n";
     }
 }
