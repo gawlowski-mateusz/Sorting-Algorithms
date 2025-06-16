@@ -101,7 +101,6 @@ void handleTestMode(const string& algorithm, int size, double density, int count
         cout << "Run #" << i + 1 << " of " << count << "\n";
 
         Graph tempGraph;
-        tempGraph.generateUndirectedGraph(size, density);
 
         int startingVertex = 0;
         int endVertex = size - 1;
@@ -110,25 +109,31 @@ void handleTestMode(const string& algorithm, int size, double density, int count
         timer.start();
 
         if (algorithm == "ford-fulkerson-bfs") {
+            tempGraph.generateDirectedGraph(size, density);
             FordFulkerson fordFulkerson(tempGraph);
             fordFulkerson.fordFulkersonBFSAdjacencyMatrix(startingVertex, endVertex);
         } else if (algorithm == "ford-fulkerson-dfs") {
+            tempGraph.generateDirectedGraph(size, density);
             FordFulkerson fordFulkerson(tempGraph);
             fordFulkerson.fordFulkersonDFSAdjacencyMatrix(startingVertex, endVertex);
         } else if (algorithm == "dijkstra") {
+            tempGraph.generateDirectedGraph(size, density);
             Dijkstra dijkstra(tempGraph);
             // dijkstra.dijkstraAdjacencyList(startingVertex);
             dijkstra.dijkstraAdjacencyMatrix(startingVertex);
         } else if (algorithm == "bellman-ford") {
+            tempGraph.generateDirectedGraph(size, density);
             BellmanFord bellmanFord(tempGraph);
             // bellmanFord.bellmanFordAdjacencyList(startingVertex);
             bellmanFord.bellmanFordAdjacencyMatrix(startingVertex);
         } else if (algorithm == "kruskal") {
+            tempGraph.generateUndirectedGraph(size, density);
             Kruskal kruskal(tempGraph);
             // kruskal.kruskalAdjacencyList();
             kruskal.kruskalAdjacencyMatrix();
         } else if (algorithm == "prim") {
             Prim prim(tempGraph);
+            tempGraph.generateUndirectedGraph(size, density);
             // prim.primAdjacencyList();
             prim.primAdjacencyMatrix();
         } else {
