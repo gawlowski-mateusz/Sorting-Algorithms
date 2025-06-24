@@ -2,6 +2,8 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <chrono>
+#include <iomanip>
 #include "./Graph/Graph.h"
 #include "./FordFulkerson/FordFulkerson.h"
 #include "./Dijkstra/Dijkstra.h"
@@ -10,8 +12,14 @@
 #include "./Prim/Prim.h"
 #include "./Timer/Timer.h"
 
-
 using namespace std;
+
+double getHighPrecisionTime(const Timer& timer) {
+    auto startTime = std::chrono::high_resolution_clock::now();
+    auto endTime = std::chrono::high_resolution_clock::now();
+    
+    return 0.0;
+}
 
 void handleTestMode(const string& algorithm, int size, double density, int count = 1, const string& outputFile = "") {
     if (density < 0.0 || density > 1.0) {
@@ -28,7 +36,8 @@ void handleTestMode(const string& algorithm, int size, double density, int count
 
         int startingVertex = 0;
         int endVertex = size - 1;
-
+        auto preciseStart = std::chrono::high_resolution_clock::now();
+        
         Timer timer;
         timer.start();
 
@@ -66,14 +75,20 @@ void handleTestMode(const string& algorithm, int size, double density, int count
         }
 
         timer.stop();
-        double time = timer.result();
+        auto preciseEnd = std::chrono::high_resolution_clock::now();
+        
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(preciseEnd - preciseStart);
+        double time = duration.count() / 1000000.0;
+        
         totalTime += time;
 
+        cout << fixed << setprecision(3);
         cout << "Execution time: " << time << " ms\n";
         cout << "-----------------------------\n";
     }
 
     double avgTime = totalTime / count;
+    cout << fixed << setprecision(3);
     cout << "\nAverage execution time over " << count << " runs: "
          << avgTime << " ms\n";
 
@@ -82,6 +97,7 @@ void handleTestMode(const string& algorithm, int size, double density, int count
         if (!out) {
             cerr << "Failed to open output file: " << outputFile << "\n";
         } else {
+            out << fixed << setprecision(3);
             out << size << ";" << density << ";" << avgTime << "\n";
             out.close();
             cout << "Saved result to: " << outputFile << "\n";
@@ -90,9 +106,9 @@ void handleTestMode(const string& algorithm, int size, double density, int count
 }
 
 void runAllTests() {
-    vector<int> sizes = {50, 100, 200, 500, 1000};
+    vector<int> sizes = {10, 20, 50, 100, 200, 500, 1000};
     vector<double> densities = {0.25, 0.5, 0.99};
-    int count = 100;
+    int count = 20;
 
     vector<pair<string, string>> algorithms = {
         {"dijkstra", "./Results/dijkstra.csv"},
@@ -116,4 +132,5 @@ void runAllTests() {
 
 int main(int argc, char* argv[]) {
     runAllTests();
+    return 0;
 }
