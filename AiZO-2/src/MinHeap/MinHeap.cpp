@@ -75,7 +75,7 @@ void MinHeap::removeElement(int index) {
 }
 
 int MinHeap::isInside(int value) {
-    for (unsigned int i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i) {
         if (array[i].weight == value)
             return i;
     }
@@ -104,7 +104,7 @@ void MinHeap::display(std::string sp, std::string sn, int v) {
     std::string cr = "┌─", cl = "└─", cp = "│ ";
     std::string s;
 
-    if (v < static_cast<int>(size)) {
+    if (v < size) {
         s = sp;
         if (sn == cr) s[s.length() - 2] = ' ';
         display(s + cp, cr, right(v));
@@ -145,7 +145,8 @@ void MinHeap::setGraph(Graph graph) {
 
 // Placeholder methods if needed
 void MinHeap::loadFromFile(std::string filename, int structureSize) {
-    // Not implemented
+    (void)filename;
+    (void)structureSize;
 }
 
 void MinHeap::saveToFile() {

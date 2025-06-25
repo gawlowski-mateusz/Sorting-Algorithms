@@ -14,13 +14,6 @@
 
 using namespace std;
 
-double getHighPrecisionTime(const Timer& timer) {
-    auto startTime = std::chrono::high_resolution_clock::now();
-    auto endTime = std::chrono::high_resolution_clock::now();
-    
-    return 0.0;
-}
-
 void handleTestMode(const string& algorithm, int size, double density, int count = 1, const string& outputFile = "") {
     if (density < 0.0 || density > 1.0) {
         cerr << "Density must be between 0 and 1.\n";
@@ -130,7 +123,7 @@ void runAllTests() {
     }
 }
 
-int main(int argc, char* argv[]) {
+int main(int /*argc*/, char* /*argv*/[]) {
     runAllTests();
     return 0;
 }

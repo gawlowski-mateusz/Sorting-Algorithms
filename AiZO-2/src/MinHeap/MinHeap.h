@@ -8,9 +8,8 @@ class MinHeap {
 private:
     static const int ARRAY_SIZE = 321000;
     Edge* array;
-    unsigned int size;
     Graph graph;
-
+    int size;
     int left(int index);
     int right(int index);
     int parent(int index);
