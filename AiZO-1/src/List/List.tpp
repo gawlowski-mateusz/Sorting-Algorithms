@@ -29,35 +29,55 @@ int List<T>::loadFromFile(const std::string &filename) {
     }
 
     int N;
-    fscanf(file, "%d", &N);
+    if (fscanf(file, "%d", &N) != 1) {
+        std::cerr << "Error reading number of elements.\n";
+        fclose(file);
+        return -1;
+    }
+
 
     // Handle different types for file reading
     if (std::is_same<T, int>::value) {
         for (int i = 0; i < N; i++) {
             int value;
-            fscanf(file, "%d", &value);
+
+            if (fscanf(file, "%d", &value) != 1) {
+                std::cerr << "Error reading int value.\n";
+                fclose(file);
+                return -1;
+            }
+
             insertAtTail(static_cast<T>(value));
         }
     } 
     else if (std::is_same<T, float>::value) {
         for (int i = 0; i < N; i++) {
             float value;
-            fscanf(file, "%f", &value);
-            insertAtTail(static_cast<T>(value));
+            if (fscanf(file, "%f", &value) != 1) {
+                std::cerr << "Error reading int value.\n";
+                fclose(file);
+                return -1;
+            }            insertAtTail(static_cast<T>(value));
         }
     }
     else if (std::is_same<T, double>::value) {
         for (int i = 0; i < N; i++) {
             double value;
-            fscanf(file, "%lf", &value);
-            insertAtTail(static_cast<T>(value));
+            if (fscanf(file, "%lf", &value) != 1) {
+                std::cerr << "Error reading int value.\n";
+                fclose(file);
+                return -1;
+            }            insertAtTail(static_cast<T>(value));
         }
     }
     else if (std::is_same<T, char>::value) {
         for (int i = 0; i < N; i++) {
             char value;
-            fscanf(file, " %c", &value);  // Space before %c consumes whitespace
-            insertAtTail(static_cast<T>(value));
+            if (fscanf(file, "%c", &value) != 1) {
+                std::cerr << "Error reading int value.\n";
+                fclose(file);
+                return -1;
+            }            insertAtTail(static_cast<T>(value));
         }
     }
     else {
@@ -180,7 +200,7 @@ void List<T>::generateList(int size) {
 }
 
 template <typename T>
-void List<T>::generateSortedPortion(int size, int start, int end) {
+void List<T>::generateSortedPortion(int /*size*/, int start, int end) {
     if (std::is_same<T, char>::value) {
         int maxChars = std::min(end - start, 26);  // Only allow up to 'z'
         char startChar = 'a';
