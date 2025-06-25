@@ -36,8 +36,7 @@ public:
     ~Graph();
 
     int loadFromFileMst(std::string fileName);
-    int* loadFromFloat(std::string fileName);
-    int loadFromSP(std::string fileName);
+    int loadFromFile(std::string fileName);
 
     void deleteEdge(int source, int destination);
     void deleteTest(Edge** e1, Edge** e2);

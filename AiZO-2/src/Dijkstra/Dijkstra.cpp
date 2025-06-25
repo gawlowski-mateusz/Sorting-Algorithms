@@ -1,6 +1,7 @@
 #include "Dijkstra.h"
 #include <iostream>
 #include <climits>
+#include <fstream>
 
 Dijkstra::Dijkstra(const Graph& graph) : graph(graph) {
     int V = graph.getVerticesNumber();
@@ -106,4 +107,31 @@ void Dijkstra::print() const {
         }
         std::cout << "Vertex " << i << ": " << path << " (Cost: " << distance[i] << ")\n";
     }
+}
+
+
+void Dijkstra::saveToFile(const std::string& filename) const {
+    std::ofstream out(filename, std::ios::app);
+    if (!out.is_open()) {
+        std::cerr << "Failed to open file: " << filename << "\n";
+        return;
+    }
+
+    out << "\nShortest Paths from Vertex " << startingVertex << ":\n";
+    for (int i = 0; i < graph.getVerticesNumber(); ++i) {
+        if (distance[i] == INT_MAX) {
+            out << "Vertex " << i << ": unreachable\n";
+            continue;
+        }
+
+        std::string path = std::to_string(i);
+        int v = i;
+        while (parent[v] != v) {
+            path = std::to_string(parent[v]) + " -> " + path;
+            v = parent[v];
+        }
+        out << "Vertex " << i << ": " << path << " (Cost: " << distance[i] << ")\n";
+    }
+
+    out.close();
 }

@@ -21,6 +21,7 @@ public:
 
     void dijkstraAdjacencyList(int start);
     void dijkstraAdjacencyMatrix(int start);
+    void saveToFile(const std::string& filename) const;
 };
 
 #endif // DIJKSTRA_H

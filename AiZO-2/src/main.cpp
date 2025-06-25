@@ -33,42 +33,65 @@ void printHelp() {
 void handleFileMode(const string& algorithm, const string& inputFile, const string& outputFile = "") {
     int startingVertex = 0;
     int endVertex;
-    
-    if (graph.loadFromFileMst(inputFile) != 0) {
+
+    // Wczytanie grafu
+    bool isMSTAlgorithm = (algorithm == "prim" || algorithm == "kruskal");
+    if (isMSTAlgorithm ? graph.loadFromFileMst(inputFile) : graph.loadFromFile(inputFile)) {
         cerr << "Failed to load graph from file: " << inputFile << '\n';
         return;
     }
-    
+
     endVertex = graph.getVerticesNumber() - 1;
 
     Timer timer;
     timer.start();
 
-    if (algorithm == "ford-fulkerson-bfs") {
-        FordFulkerson fordFulkerson(graph);
-        cout << "FordFulkerson BFS" << endl;
-        fordFulkerson.fordFulkersonBFSAdjacencyMatrix(startingVertex, endVertex);
-    } else if (algorithm == "ford-fulkerson-dfs") {
-        FordFulkerson fordFulkerson(graph);
-        cout << "FordFulkerson DFS" << endl;
-        fordFulkerson.fordFulkersonDFSAdjacencyMatrix(startingVertex, endVertex);
-    } else if (algorithm == "bellman-ford") {
-        BellmanFord bellmanFord(graph);
-        bellmanFord.bellmanFordAdjacencyList(startingVertex);
-        bellmanFord.bellmanFordAdjacencyMatrix(startingVertex);
-    } else if (algorithm == "dijkstra") {
+    if (algorithm == "ford-fulkerson-bfs" || algorithm == "ford-fulkerson-dfs") {
+        FordFulkerson ff(graph);
+        cout << "FordFulkerson " << (algorithm.back() == 's' ? "DFS" : "BFS") << endl;
+
+        if (algorithm == "ford-fulkerson-bfs") {
+            ff.fordFulkersonBFSAdjacencyMatrix(startingVertex, endVertex);
+            if (!outputFile.empty())
+                ff.saveToFile(outputFile, "BFS");
+        } else {
+            ff.fordFulkersonDFSAdjacencyMatrix(startingVertex, endVertex);
+            if (!outputFile.empty())
+                ff.saveToFile(outputFile, "DFS");
+        }
+    }
+
+    else if (algorithm == "bellman-ford") {
+        BellmanFord bf(graph);
+        bf.bellmanFordAdjacencyList(startingVertex);
+        bf.bellmanFordAdjacencyMatrix(startingVertex);
+    }
+
+    else if (algorithm == "dijkstra") {
         Dijkstra dijkstra(graph);
         dijkstra.dijkstraAdjacencyList(startingVertex);
         dijkstra.dijkstraAdjacencyMatrix(startingVertex);
-    } else if (algorithm == "prim") {
+
+        if (!outputFile.empty())
+            dijkstra.saveToFile(outputFile);
+    }
+
+    // Prim
+    else if (algorithm == "prim") {
         Prim prim(graph);
         prim.primAdjacencyList();
         prim.primAdjacencyMatrix();
-    } else if (algorithm == "kruskal") {
+    }
+
+    // Kruskal
+    else if (algorithm == "kruskal") {
         Kruskal kruskal(graph);
         kruskal.kruskalAdjacencyList();
         kruskal.kruskalAdjacencyMatrix();
-    } else {
+
+    }
+
+    else {
         cerr << "Unknown algorithm: " << algorithm << '\n';
         return;
     }
@@ -82,12 +105,13 @@ void handleFileMode(const string& algorithm, const string& inputFile, const stri
         if (!out) {
             cerr << "Failed to open output file: " << outputFile << "\n";
         } else {
-            out << graph.getVerticesNumber() << ";N/A;" << execTime << "\n";
+            out << "\nVertices number:" << graph.getVerticesNumber() << "\nExecution time" << execTime << "\n";
             out.close();
-            cout << "Saved result to: " << outputFile << "\n";
+            cout << "Saved timing result to: " << outputFile << "\n";
         }
     }
 }
+
 
 void handleTestMode(const string& algorithm, int size, double density, int count = 1, const string& outputFile = "") {
     if (density < 0.0 || density > 1.0) {

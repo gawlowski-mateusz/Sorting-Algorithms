@@ -166,7 +166,7 @@ void Graph::generateUndirectedGraph(int numberOfVertices, double density) {
     int edgesAdded = 0;
     
     for (int i = 0; i < numberOfVertices - 1; ++i) {
-        addUndirectedEdge(i, i + 1, rand() % 10 + 1);
+        addUndirectedEdge(i, i + 1, rand() % 10000);
         edgesAdded++;
     }
     
@@ -182,7 +182,7 @@ void Graph::generateUndirectedGraph(int numberOfVertices, double density) {
             continue;
         }
         
-        addUndirectedEdge(src, dst, rand() % 20 + 1);
+        addUndirectedEdge(src, dst, rand() % 20000 + 1);
         edgesAdded++;
         attempts = 0;
     }
@@ -202,7 +202,7 @@ void Graph::generateDirectedGraph(int numberOfVertices, double density) {
     int edgesAdded = 0;
     
     for (int i = 0; i < numberOfVertices - 1; ++i) {
-        addDirectedEdge(i, i + 1, rand() % 10 + 1);
+        addDirectedEdge(i, i + 1, rand() % 10000);
         edgesAdded++;
     }
     
@@ -218,7 +218,7 @@ void Graph::generateDirectedGraph(int numberOfVertices, double density) {
             continue;
         }
         
-        addDirectedEdge(src, dst, rand() % 20 + 1);
+        addDirectedEdge(src, dst, rand() % 20000 + 1);
         edgesAdded++;
         attempts = 0;
     }
@@ -243,37 +243,15 @@ int Graph::loadFromFileMst(std::string fileName) {
     return 0;
 }
 
-int* Graph::loadFromFloat(std::string fileName) {
-    deleteGraph();
-    std::ifstream file(fileName);
-    if (!file.is_open()) {
-        std::cout << "Can not open file" << std::endl;
-        return nullptr;
-    }
-    static int SandT[2];
-    int edges, startVertex, endVertex;
-    file >> edges >> numberOfVertices >> startVertex >> endVertex;
-    createGraph(numberOfVertices);
-    for (int i = 0; i < edges; ++i) {
-        int src, dst, wght;
-        file >> src >> dst >> wght;
-        addDirectedEdge(src, dst, wght);
-    }
-    SandT[0] = startVertex;
-    SandT[1] = endVertex;
-    file.close();
-    return SandT;
-}
-
-int Graph::loadFromSP(std::string fileName) {
+int Graph::loadFromFile(std::string fileName) {
     deleteGraph();
     std::ifstream file(fileName);
     if (!file.is_open()) {
         std::cout << "Can not open file" << std::endl;
         return -1;
     }
-    int edges, startingVertex;
-    file >> edges >> numberOfVertices >> startingVertex;
+    int edges;
+    file >> edges >> numberOfVertices;
     createGraph(numberOfVertices);
     for (int i = 0; i < edges; ++i) {
         int src, dst, wght;
@@ -281,7 +259,7 @@ int Graph::loadFromSP(std::string fileName) {
         addDirectedEdge(src, dst, wght);
     }
     file.close();
-    return startingVertex;
+    return 0;
 }
 
 // Getters

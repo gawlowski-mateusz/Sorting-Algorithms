@@ -2,6 +2,7 @@
 #include <iostream>
 #include <climits>
 #include <algorithm>
+#include <fstream>
 #include "../Queue/Queue.h"
 #include "../Stack/Stack.h"
 
@@ -151,4 +152,15 @@ bool FordFulkerson::dfsAdjacencyMatrix(int** residualGraph, int start, int end, 
 
     if (!visitedExternal) delete[] visited;
     return false;
+}
+
+void FordFulkerson::saveToFile(const std::string& filename, const std::string& method) const {
+    std::ofstream out(filename, std::ios::app);
+    if (!out.is_open()) {
+        std::cerr << "Failed to open file: " << filename << "\n";
+        return;
+    }
+
+    out << "Max Flow (" << method << "): " << lastMaxFlow << "\n";
+    out.close();
 }
