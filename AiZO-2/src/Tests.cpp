@@ -4,6 +4,9 @@
 #include <string>
 #include <chrono>
 #include <iomanip>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <errno.h>
 #include "./Graph/Graph.h"
 #include "./FordFulkerson/FordFulkerson.h"
 #include "./Dijkstra/Dijkstra.h"
@@ -124,6 +127,12 @@ void runAllTests() {
 }
 
 int main(int /*argc*/, char* /*argv*/[]) {
+    const char* resultsDir = "./Results";
+    if (mkdir(resultsDir, 0777) && errno != EEXIST) {
+        cerr << "Error creating directory: " << resultsDir << '\n';
+        return 1;
+    }
+
     runAllTests();
     return 0;
 }
